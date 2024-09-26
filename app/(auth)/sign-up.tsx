@@ -21,14 +21,14 @@ const SignUp = () => {
   const submit= async ()=>{
     if(!form.username || !form.email || !form.password){
       Alert.alert('Error', 'Please fill in all the fields');
-      return;
+      return; 
     }
     setIsSubmitting(true);
       try {
         // const result = await createUser(form.email, form.password, form.username);
         const user = await signup(form.username, form.password, form.email, form.role); 
         setIsLoggedIn(true);
-        setUser(result);
+        setUser(user);
         router.push('/');
 
       } catch (error) {
