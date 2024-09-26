@@ -2,6 +2,7 @@ import { useFonts } from 'expo-font';
 import { SplashScreen, Stack, Tabs } from 'expo-router';
 import { useEffect } from 'react';
 import { View, Image, Text } from 'react-native'
+import {GlobalProvider} from '../context/GlobalProvider'
 
 export default function RootLayout() {
   const [fontsLoaded, error] = useFonts({
@@ -24,9 +25,15 @@ export default function RootLayout() {
  
    if(!fontsLoaded && !error) return null;
   return (
+    <GlobalProvider>
+
     <Stack>
       <Stack.Screen name="index" options={{headerShown: false}} />
+      <Stack.Screen name="(auth)" options={{headerShown: false}} />
+      <Stack.Screen name="profile" options={{headerShown: false}} />
+
     </Stack>
+    </GlobalProvider>
     
   );
 }

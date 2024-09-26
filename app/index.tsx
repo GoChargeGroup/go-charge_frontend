@@ -6,9 +6,13 @@ import BottomSheet, { BottomSheetFlatList, BottomSheetView } from '@gorhom/botto
 import { icons } from '../constants';
 import CustomButton from '@/components/CustomButton';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { useGlobalContext } from "@/context/GlobalProvider";
+import { router } from 'expo-router';
+import ChargerItem from '@/components/ChargerItem';
 
 const Index = () => {
   const [location, setLocation] = useState(null);
+  const {isLoggedIn, user} = useGlobalContext();
   const [chargers, setChargers] = useState([]);
   const [loading, setLoading] = useState(true); 
   const [selectedCharger, setSelectedCharger] = useState<Charger | null>(null);
@@ -40,8 +44,9 @@ const Index = () => {
   const fetchChargers = async () => {
  
     const chargersData = [
-      { id: 1, name: 'Charger 1', latitude: 40.52217359148111, longitude: -86.93082888528933 },
-      { id: 2, name: 'Charger 2', latitude: 40.22217359148111, longitude: -86.93082888528933 },
+      { id: 1, name: 'Charger 1', description: "Very good charger", latitude: 40.52217359148111, longitude: -86.93082888528933, price: 50, isWorking: true, working_hours: "24/7", address: "Mitch Daniels", contact: "Daddy Mitch", pictures: ["https://edrive.kz/charger/img/123414241241241.jpeg?_t=1655092204"], amount: 1 },
+      { id: 2, name: 'Charger 2', description: "Super bad charger", latitude: 40.22217359148111, longitude: -86.93082888528933, price: 20, isWorking: true, working_hours: "24/7", address: "Lily", contact: "+54423423", pictures: ["https://edrive.kz/charger/img/GreenSity2.jpeg"], amount: 1 },
+
     
     ];
     setChargers(chargersData);
@@ -125,6 +130,16 @@ const Index = () => {
         {showMarkers()}
       </MapView>
 
+      <View className="absolute bottom-32 pl-3 pr-3 right-1 left-1">
+            {selectedCharger && !chargerDetailsVisible && (
+              <ChargerItem
+                charger={selectedCharger}
+                userLocation={location}
+                onPress={() => setChargerDetailsVisible(true)}
+              />
+            )}
+        </View>
+
       <BottomSheet
             ref={menuSheetRef}
             snapPoints={menuSnapPoints}
@@ -141,13 +156,13 @@ const Index = () => {
                 </TouchableOpacity>
                 </View>
               <TouchableOpacity className="" onPress={() => {
-                // if (isLoggedIn) {
-                //   // Redirect to profile page if logged in
-                //   router.push('/profile');
-                // } else {
-                //   // Redirect to sign-in page if not logged in
-                //   router.push('/sign-in');
-                // }
+                if (isLoggedIn) {
+                  // Redirect to profile page if logged in
+                  router.push('/profile');
+                } else {
+                  // Redirect to sign-in page if not logged in
+                  router.push('/sign-in');
+                }
               }}>
                    <View className="w-11/12 p-4 mb-4 bg-customWhite-200 rounded-2xl   flex-row justify-between items-center ">
                     <View>

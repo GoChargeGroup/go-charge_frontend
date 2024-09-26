@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react'
 import { haversineDistance } from '@/utils/utils';
 import { useNavigation } from '@react-navigation/native';
 import { icons } from '@/constants';
-import { getReviewsByChargerId } from '@/lib/appwrite';
 
 const ChargerItem = ({ charger, userLocation, onPress, otherStyles }) => {
   const navigation = useNavigation();
@@ -14,7 +13,8 @@ const ChargerItem = ({ charger, userLocation, onPress, otherStyles }) => {
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-        const reviewsData = await getReviewsByChargerId(charger.$id);
+        // const reviewsData = await getReviewsByChargerId(charger.$id);
+        const reviewsData = [];
         if (reviewsData.length > 0) {
           const totalRating = reviewsData.reduce((acc, review) => acc + review.rating, 0);
           setAverageRating((totalRating / reviewsData.length).toFixed(1));
@@ -60,7 +60,7 @@ const ChargerItem = ({ charger, userLocation, onPress, otherStyles }) => {
                 <Text className="font-sfbold text-xl text-black ml-2">{charger.name}</Text>
               </View>
               <Text className={`text-lg font-sfregular ${charger.isWorking ? 'text-green-100' : 'text-red-500'}`}>
-                {charger.isWorking ? 'Открыто' : 'Закрыто'}
+                {charger.isWorking ? 'Free' : 'Closed'}
               </Text>
             </View>
           </View>
@@ -76,9 +76,9 @@ const ChargerItem = ({ charger, userLocation, onPress, otherStyles }) => {
         <View className="flex-row justify-between items-center mt-1">
           <View className="flex-row items-center">
             <Image source={icons.kabel} className="w-6 h-6 p-4" />
-            <Text className="font-sfbold text-xl ml-2">Описание:</Text>
+            <Text className="font-sfbold text-xl ml-2">Description:</Text>
           </View>
-          <Text className="font-sfregular text-sm text-green-100 text-base">{charger.price} KZT кВт</Text>
+          <Text className="font-sfregular text-sm text-green-100 text-base">{charger.price} USD kWt</Text>
         </View>
         <View className="flex-row justify-between items-center mt-1 ml-8">
           {charger.description && (
@@ -88,7 +88,7 @@ const ChargerItem = ({ charger, userLocation, onPress, otherStyles }) => {
             <Text className="font-sfregular text-sm text-black ml-2">{charger.kWhTypes.value}</Text>
           )}
           {distance !== null && (
-            <Text className="font-sfregular text-sm text-black-200">{distance.toFixed(2)} км</Text>
+            <Text className="font-sfregular text-sm text-black-200">{distance.toFixed(2)} km</Text>
           )}
         </View>
       </View>
