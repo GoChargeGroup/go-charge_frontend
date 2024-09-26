@@ -3,11 +3,14 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import MapView, { Marker, PROVIDER_DEFAULT, PROVIDER_GOOGLE } from "react-native-maps";
 import * as Location from 'expo-location';
 import BottomSheet, { BottomSheetFlatList, BottomSheetView } from '@gorhom/bottom-sheet';
+import { Link, router, useRouter } from "expo-router";
 import { icons } from '../constants';
 import CustomButton from '@/components/CustomButton';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 const Index = () => {
+  const router = useRouter();
+
   const [location, setLocation] = useState(null);
   const [chargers, setChargers] = useState([]);
   const [loading, setLoading] = useState(true); 
@@ -146,7 +149,7 @@ const Index = () => {
                 //   router.push('/profile');
                 // } else {
                 //   // Redirect to sign-in page if not logged in
-                //   router.push('/sign-in');
+                  router.push('/sign-in');
                 // }
               }}>
                    <View className="w-11/12 p-4 mb-4 bg-customWhite-200 rounded-2xl   flex-row justify-between items-center ">

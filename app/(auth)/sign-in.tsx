@@ -74,7 +74,7 @@ const SignIn = () => {
       <SafeAreaView className="h-full bg-customWhite">
         <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center' }}>
           <View className="w-full px-4 my-6 flex-1 items-center">
-            {/* <Image source={icons.logo} className="self-center w-11/12 h-16 mt-10" resizeMode="contain" /> */}
+            <Image source={icons.logo} className="self-center w-11/12 h-16 mt-10" resizeMode="contain" />
             <Text className="text-xl text-center text-black font-sfregular mb-2">Power Up Your Journey. Join Us Today!</Text>
             <FormField
               placeholder="Phone number or email"
