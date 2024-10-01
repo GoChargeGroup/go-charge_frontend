@@ -13,26 +13,40 @@ import { useGlobalContext } from '@/context/GlobalProvider';
 const SignIn = () => {
 
   const [form, setForm] = useState({
-    email: '',
+    username: '',
     password: ''
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const { setIsLoggedIn, setUser } = useGlobalContext();
   const submit = async () => {
-    if (!form.email || !form.password) {
+    if (!form.username || !form.password) {
       Alert.alert('Error', 'Please fill in all the fields');
       return;
     }
     setIsSubmitting(true);
     try {
-      const user = await login(form.email, form.password);
+      const user = await login(form.username, form.password);
       setIsLoggedIn(true);
       setUser(user);
       Alert.alert('Success', 'Login successful!');
       router.push('/');
     } catch (error) {
-      Alert.alert('Error', error.message || 'Failed to login');
-    } finally {
+     
+      Alert.alert(
+        'Error',
+        error.message || 'Failed to login',
+        [
+          { text: 'Try Again', style: 'cancel' },
+          {
+            text: 'Reset Password',
+            onPress: () => {
+              router.push('/forgot-password');
+            },
+          },
+        ],
+        { cancelable: true }
+      );
+    }  finally {
       setIsSubmitting(false);
     }
   };
@@ -65,20 +79,21 @@ const SignIn = () => {
            
             <Text className="text-5xl text-center text-black font-sfregular mb-2">Power Up Your Journey. Join Us Today!</Text>
             <FormField
-              placeholder="Email"
-              value={form.email}
-              handleChangeText={(e) => setForm({ ...form, email: e })}
+              placeholder="Username"
+              value={form.username}
+              handleChangeText={(e) => setForm({ ...form, username: e })}
               otherStyles="mt-7 w-11/12"
               formStyles="border-2 border-gray-600 rounded-xl"
               keyboardType="email-address"
             />
             <FormField
+             title="Password"
               placeholder="Password"
               value={form.password}
               otherStyles={"w-11/12"}
                formStyles="border-2 border-gray-600 rounded-xl"
               handleChangeText={(e) => setForm({ ...form, password: e })}
-              secureTextEntry
+             
             />
             <CustomButton
               title="Login"

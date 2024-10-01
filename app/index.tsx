@@ -9,6 +9,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useGlobalContext } from "@/context/GlobalProvider";
 import { router } from 'expo-router';
 import ChargerItem from '@/components/ChargerItem';
+import ChargerDetailsSheet from '@/components/ChargerDetailsSheet';
 
 const Index = () => {
   const [location, setLocation] = useState(null);
@@ -139,6 +140,22 @@ const Index = () => {
               />
             )}
         </View>
+
+        {chargerDetailsVisible && selectedCharger && (
+            
+            <View className="absolute bottom-0 left-0 right-0 h-[85%] mt-10 rounded-xl">
+              <View> 
+              <ChargerItem
+                  charger={selectedCharger}
+                  userLocation={location}
+                  otherStyles={""}
+                />
+              </View>
+              
+              <ChargerDetailsSheet charger={selectedCharger} />
+            
+            </View>
+          )}  
 
       <BottomSheet
             ref={menuSheetRef}

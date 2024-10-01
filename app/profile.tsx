@@ -126,6 +126,10 @@ const Profile = () => {
           <Text className="text-red-500 font-sfbold text-lg">Logout</Text>
             <AntDesign name="right" size={20} color="red" />
           </TouchableOpacity>
+          <TouchableOpacity className="bg-gray-200 p-4 rounded-lg mt-4 flex-row justify-between items-center" >
+          <Text className="text-red-500 font-sfbold text-lg">Delete Account</Text>
+            <AntDesign name="right" size={20} color="red" />
+          </TouchableOpacity>
         </View>
         
       </ScrollView>
