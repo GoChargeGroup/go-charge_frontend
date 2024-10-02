@@ -1,4 +1,4 @@
-import { View, Text, ActivityIndicator, Platform, Image, TouchableOpacity, Keyboard } from 'react-native';
+import { View, Text, ActivityIndicator, Platform, Image, TouchableOpacity, Keyboard, Alert } from 'react-native';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import MapView, { Marker, PROVIDER_DEFAULT, PROVIDER_GOOGLE } from "react-native-maps";
 import * as Location from 'expo-location';
@@ -10,6 +10,7 @@ import { useGlobalContext } from "@/context/GlobalProvider";
 import { router } from 'expo-router';
 import ChargerItem from '@/components/ChargerItem';
 import MapSearchBar from '@/components/MapSearchBar';
+import axios from 'axios';
 
 const Index = () => {
   const [location, setLocation] = useState(null);
@@ -31,8 +32,11 @@ const Index = () => {
     setMenuVisible(false); // Set menu visibility to false
     menuSheetRef.current?.close();
   };
+  const menuSheetRef = useRef(null);
 
-  const searchSnapPoints = useMemo(() => ['80%'], []);
+  //#region Search Bar Functionality
+  const MAPBOX_API_KEY = process.env.EXPO_PUBLIC_REACT_APP_MAPBOX_API_KEY;
+  const searchSnapPoints = useMemo(() => ['50%'], []);
   const openSearchSheet = () => {
     setSearchBarVisible(true);
     searchSheetRef.current?.expand();
@@ -43,8 +47,72 @@ const Index = () => {
     searchSheetRef.current?.close();
   };
   const searchSheetRef = useRef(null);
+
+  // Get location from search
+  const fetchSearchLocation = async (place: string) => {
+    try {
+      const response = await axios.get(
+        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(place)}.json`,
+        {
+          params: {
+            access_token: MAPBOX_API_KEY,
+          },
+        }
+      );
+
+      // Use first result
+      if (response.data.features && response.data.features.length > 0) {
+        const locationData = response.data.features[0];
+        const [longitude, latitude] = locationData.center;
+
+        // create new location object 
+        const newLocation: Location.LocationObject = {
+          coords: {
+            latitude,
+            longitude,
+            altitude: null,
+            accuracy: null,
+            altitudeAccuracy: null,
+            heading: null,
+            speed: null
+          },
+          timestamp: Date.now(),
+        };
+
+        if (newLocation && mapRef.current) {
+          mapRef.current.animateToRegion({
+            latitude: newLocation.coords.latitude,
+            longitude: newLocation.coords.longitude,
+            latitudeDelta: 0.03,
+            longitudeDelta: 0.03,
+          });
+        }
+      } else {
+        // If no results are found, show an alert
+        Alert.alert('No results found.');
+      }
+    } catch (error: unknown) {
+      // Check if the error is an instance of the built-in Error class
+      if (error instanceof Error) {
+        Alert.alert('Error fetching location', error.message);
+      } else {
+        Alert.alert('Error fetching location', 'An unknown error occurred.');
+      }
+    } finally {
+      //Close search sheet
+      Keyboard.dismiss();
+      setSearchBarVisible(false); // Set menu visibility to false
+      searchSheetRef.current?.close();
+    }
+  };
+
+  // Handler for search function
+  const handleSearch = (place: string) => {
+    fetchSearchLocation(place);
+  }; 
   
-  const menuSheetRef = useRef(null);
+  //#endregion Search Bar Functionality
+  
   const fetchLocation = async () => {
     let { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== 'granted') {
@@ -218,9 +286,7 @@ const Index = () => {
           onClose={closeSearchSheet}
           index={-1}> 
         <BottomSheetView style={{ flex: 1, alignItems: 'center', justifyContent: 'top', backgroundColor: "#F6F6F7A6", opacity: "65%" }}>
-          <MapSearchBar onSearch={function (query: string): void {
-              throw new Error('Function not implemented.');
-            } }></MapSearchBar>
+          <MapSearchBar onSearch={handleSearch}></MapSearchBar>
         </BottomSheetView>
       </BottomSheet>
 
