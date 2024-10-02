@@ -60,7 +60,7 @@ const ChargerItem = ({ charger, userLocation, onPress, otherStyles }) => {
                 <Text className="font-sfbold text-xl text-black ml-2">{charger.name}</Text>
               </View>
               <Text className={`text-lg font-sfregular ${charger.isWorking ? 'text-green-100' : 'text-red-500'}`}>
-                {charger.isWorking ? 'Free' : 'Closed'}
+                {charger.isWorking ? 'Open' : 'Busy'}
               </Text>
             </View>
           </View>

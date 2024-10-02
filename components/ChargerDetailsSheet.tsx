@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, Image, FlatList, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, Image, FlatList, KeyboardAvoidingView, Platform, TouchableOpacity } from 'react-native';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import ChargerItem from "@/components/ChargerItem";
 import * as Location from 'expo-location';
@@ -9,11 +9,24 @@ import CustomButton from './CustomButton';
 import ReviewForm from '@/app/(charger)/reviewForm';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScrollView } from 'react-native-gesture-handler';
-const PhotosTab = ({ charger }) => {
+import { router } from 'expo-router';
+const PhotosTab = ({ charger, setSelectedCharger }) => {
     if (!charger) {
       return <Text>Loading...</Text>;
     }
-  
+    const handleStartCharging = () => {
+      const updatedCharger = { ...charger, isWorking: false };
+      setSelectedCharger(updatedCharger);
+
+
+      router.push({
+        pathname: '/charging-session',
+        params: {
+          charger: updatedCharger,
+        },
+      }); 
+    };
+    
     return (
       <ScrollView className="flex-1">
         <View className="px-4 py-4">
@@ -26,6 +39,10 @@ const PhotosTab = ({ charger }) => {
           ) : (
             <Text>No photos available</Text>
           )}
+           <TouchableOpacity onPress={handleStartCharging} className="items-center mt-20">
+            <Image source={icons.charger} className="w-32 h-32" resizeMode="contain" />
+            <Text className="text-lg font-sfbold text-center bottom-8">Charge your car</Text>
+        </TouchableOpacity>
         </View>
       </ScrollView>
     );
@@ -92,7 +109,7 @@ const PhotosTab = ({ charger }) => {
   
 
 
-const ChargerDetailsSheet = ({ charger }) => {
+const ChargerDetailsSheet = ({ charger, setSelectedCharger}) => {
     const [index, setIndex] = useState(0);
     const [routes] = useState([
       { key: 'photos', title: 'Photos' },
@@ -100,7 +117,7 @@ const ChargerDetailsSheet = ({ charger }) => {
     ]);
   
     const renderScene = SceneMap({
-      photos: () => <PhotosTab charger={charger} />,
+      photos: () => <PhotosTab charger={charger} setSelectedCharger={setSelectedCharger} />,
       reviews: () => <ReviewsTab charger={charger} />,
     });
   

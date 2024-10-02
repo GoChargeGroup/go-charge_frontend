@@ -152,7 +152,7 @@ const Index = () => {
                 />
               </View>
               
-              <ChargerDetailsSheet charger={selectedCharger} />
+              <ChargerDetailsSheet charger={selectedCharger} setSelectedCharger={setSelectedCharger} />
             
             </View>
           )}  
@@ -192,7 +192,7 @@ const Index = () => {
                   </View>
               </TouchableOpacity>
               <CustomButton
-              title="Became a partner"
+              title="Become a partner"
               handlePress={() => { router.push('become-partner'); }}
               picture={icons.light}
             /> 
