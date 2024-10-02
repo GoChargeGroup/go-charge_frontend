@@ -47,17 +47,17 @@ const Profile = () => {
   if (!user) {
     return null;
   }
-//   const navigateToForm = (fieldName, fieldValue, displayName) => {
-//     router.push({
-//       pathname: 'GenericFormProfile',
-//       params: {
-//         fieldName,
-//         fieldValue,
-//         userId: user.$id,
-//         displayName
-//       },
-//     });
-//   };
+  const navigateToForm = (fieldName, fieldValue, displayName) => {
+    router.push({
+      pathname: 'GenericFormProfile',
+      params: {
+        fieldName,
+        fieldValue,
+        userId: user.$id,
+        displayName
+      },
+    });
+  };
 
   return (
     <SafeAreaView className="bg-customWhite-200 h-full">
@@ -80,7 +80,7 @@ const Profile = () => {
           <Text className="text-lg font-sfbold">Details</Text>
           
           <TouchableOpacity className="bg-gray-200 p-6 rounded-lg mt-4 flex-row justify-between items-center"
-        //    onPress={() => navigateToForm('username', user.username || '', "Никнейм")}
+            onPress={() => navigateToForm('username', user.username || '', "Username")}
           >
           {!user.username && (
               <Text className="text-gray-700 font-sfregular text-lg">Username</Text>
@@ -89,7 +89,7 @@ const Profile = () => {
             <AntDesign name="right" size={20} color="gray" />
           </TouchableOpacity>
           <TouchableOpacity className="bg-gray-200 p-6 rounded-lg mt-4 flex-row justify-between items-center"
-        //    onPress={() => navigateToForm('email', user.email || '', "Email")}
+            onPress={() => navigateToForm('email', user.email || '', "Email")}
           >
             
           {!user.email && (
@@ -117,7 +117,7 @@ const Profile = () => {
             />
           </View>
           <CustomButton
-              title="Became Partner"
+              title="Become Partner"
               containerStyles={"w-full mt-3"}
               handlePress={() => { router.push('become-partner'); }}
               picture={icons.light}
