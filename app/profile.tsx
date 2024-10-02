@@ -7,6 +7,7 @@ import { icons } from '@/constants';
 import { AntDesign } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import CustomButton from '@/components/CustomButton';
+import { deleteUser } from '@/lib/authService';
 
 const Profile = () => {
   const { user, setUser, setIsLoggedIn, isLoading } = useGlobalContext();
@@ -34,7 +35,31 @@ const Profile = () => {
     }
   };
 
-  
+  const handleDeleteAccount = () => {
+    Alert.alert(
+      'Delete Account',
+      'Are you sure you want to delete your account? This action cannot be undone.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'OK',
+          onPress: async () => {
+            try {
+              await deleteUser(); 
+              setUser(null); 
+              setIsLoggedIn(false); 
+              router.replace('/sign-in'); 
+              Alert.alert('Success', 'Account deleted successfully');
+            } catch (error) {
+              console.log(error);
+              Alert.alert('Error', 'Failed to delete account. Please try again later.');
+            }
+          },
+        },
+      ],
+      { cancelable: true }
+    );
+  };
   
   if (isLoading) {
     return (
@@ -126,7 +151,7 @@ const Profile = () => {
           <Text className="text-red-500 font-sfbold text-lg">Logout</Text>
             <AntDesign name="right" size={20} color="red" />
           </TouchableOpacity>
-          <TouchableOpacity className="bg-gray-200 p-4 rounded-lg mt-4 flex-row justify-between items-center" >
+          <TouchableOpacity className="bg-gray-200 p-4 rounded-lg mt-4 flex-row justify-between items-center"onPress={handleDeleteAccount} >
           <Text className="text-red-500 font-sfbold text-lg">Delete Account</Text>
             <AntDesign name="right" size={20} color="red" />
           </TouchableOpacity>
