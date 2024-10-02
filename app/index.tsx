@@ -1,4 +1,4 @@
-import { View, Text, ActivityIndicator, Platform, Image, TouchableOpacity } from 'react-native';
+import { View, Text, ActivityIndicator, Platform, Image, TouchableOpacity, Keyboard } from 'react-native';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import MapView, { Marker, PROVIDER_DEFAULT, PROVIDER_GOOGLE } from "react-native-maps";
 import * as Location from 'expo-location';
@@ -9,6 +9,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useGlobalContext } from "@/context/GlobalProvider";
 import { router } from 'expo-router';
 import ChargerItem from '@/components/ChargerItem';
+import MapSearchBar from '@/components/MapSearchBar';
 
 const Index = () => {
   const [location, setLocation] = useState(null);
@@ -18,6 +19,7 @@ const Index = () => {
   const [selectedCharger, setSelectedCharger] = useState<Charger | null>(null);
   const [isMarkerPressed, setIsMarkerPressed] = useState(false);
   const [menuVisible, setMenuVisible] = useState(false); 
+  const [searchBarVisible, setSearchBarVisible] = useState(false); 
   const [chargerDetailsVisible, setChargerDetailsVisible] = useState(false);
   const mapRef = useRef(null);
   const menuSnapPoints = useMemo(() => ['66%'], []);
@@ -29,6 +31,19 @@ const Index = () => {
     setMenuVisible(false); // Set menu visibility to false
     menuSheetRef.current?.close();
   };
+
+  const searchSnapPoints = useMemo(() => ['80%'], []);
+  const openSearchSheet = () => {
+    setSearchBarVisible(true);
+    searchSheetRef.current?.expand();
+  };
+  const closeSearchSheet = () => {
+    Keyboard.dismiss();
+    setSearchBarVisible(false); // Set menu visibility to false
+    searchSheetRef.current?.close();
+  };
+  const searchSheetRef = useRef(null);
+  
   const menuSheetRef = useRef(null);
   const fetchLocation = async () => {
     let { status } = await Location.requestForegroundPermissionsAsync();
@@ -129,7 +144,6 @@ const Index = () => {
       >
         {showMarkers()}
       </MapView>
-
       <View className="absolute bottom-32 pl-3 pr-3 right-1 left-1">
             {selectedCharger && !chargerDetailsVisible && (
               <ChargerItem
@@ -195,19 +209,49 @@ const Index = () => {
             </BottomSheetView>
            
           </BottomSheet>
-      {!menuVisible && !chargerDetailsVisible &&(
-          <TouchableOpacity onPress={openMenuSheet} className="absolute bottom-12 ">
-            <Image source={icons.menu} className="w-20 h-20" resizeMode="contain" />
+      
+      {/* Search Sheet */}
+      <BottomSheet 
+          ref={searchSheetRef}
+          snapPoints={searchSnapPoints}
+          enablePanDownToClose={true}
+          onClose={closeSearchSheet}
+          index={-1}> 
+        <BottomSheetView style={{ flex: 1, alignItems: 'center', justifyContent: 'top', backgroundColor: "#F6F6F7A6", opacity: "65%" }}>
+          <MapSearchBar onSearch={function (query: string): void {
+              throw new Error('Function not implemented.');
+            } }></MapSearchBar>
+        </BottomSheetView>
+      </BottomSheet>
+
+      {/* Search Button */}
+      {!searchBarVisible && !menuVisible && !chargerDetailsVisible &&(
+        <TouchableOpacity onPress={openSearchSheet} className="absolute bottom-32 right-5">
+          <View style={{ width: 50, height: 50, backgroundColor: 'white', borderRadius: 40, justifyContent: 'center', alignItems: 'center' }}>
+            <TouchableOpacity onPress={openSearchSheet} style={{ width: 25, height: 25 }}>
+              <Image 
+                  source={icons.searchButton} 
+                  style={{ width: '100%', height: '100%' }} 
+                  resizeMode="contain" 
+              />
+            </TouchableOpacity>
+          </View>
+        </TouchableOpacity>
+      )}
+      {/* Menu */}
+      {!searchBarVisible && !menuVisible && !chargerDetailsVisible &&(
+        <TouchableOpacity onPress={openMenuSheet} className="absolute bottom-12 ">
+          <Image source={icons.menu} className="w-20 h-20" resizeMode="contain" />
         </TouchableOpacity>
           )}
-          {!menuVisible && !chargerDetailsVisible &&(
-          <TouchableOpacity onPress={centerMapOnUserLocation} className="absolute bottom-12 right-1 ">
-            <Image source={icons.plus} className="w-20 h-20" resizeMode="contain" />
-          </TouchableOpacity>
-          )}
+      {/* Center Map */}
+      {!searchBarVisible && !menuVisible && !chargerDetailsVisible &&(
+        <TouchableOpacity onPress={centerMapOnUserLocation} className="absolute bottom-12 right-1 ">
+          <Image source={icons.plus} className="w-20 h-20" resizeMode="contain" />
+        </TouchableOpacity>
+      )}
     </View>
     </GestureHandlerRootView>
-
   );
 };
 
