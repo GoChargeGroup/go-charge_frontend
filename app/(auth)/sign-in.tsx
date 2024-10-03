@@ -90,7 +90,7 @@ const SignIn = () => {
              title="Password"
               placeholder="Password"
               value={form.password}
-              otherStyles={"w-11/12"}
+              otherStyles={"w-11/12 mb-2"}
                formStyles="border-2 border-gray-600 rounded-xl"
               handleChangeText={(e) => setForm({ ...form, password: e })}
              
@@ -98,7 +98,7 @@ const SignIn = () => {
             <CustomButton
               title="Login"
               handlePress={submit}
-              containerStyles="mt-7 "
+              containerStyles="mt-7"
               isLoading={isSubmitting}
             />
             <View className="justify-between flex-row">
