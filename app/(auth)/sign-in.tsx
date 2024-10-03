@@ -40,7 +40,7 @@ const SignIn = () => {
           {
             text: 'Reset Password',
             onPress: () => {
-              router.push('/forgot-password');
+              router.push('/reset-password');
             },
           },
         ],
@@ -90,7 +90,7 @@ const SignIn = () => {
              title="Password"
               placeholder="Password"
               value={form.password}
-              otherStyles={"w-11/12"}
+              otherStyles={"w-11/12 mb-2"}
                formStyles="border-2 border-gray-600 rounded-xl"
               handleChangeText={(e) => setForm({ ...form, password: e })}
              
@@ -98,11 +98,11 @@ const SignIn = () => {
             <CustomButton
               title="Login"
               handlePress={submit}
-              containerStyles="mt-7 "
+              containerStyles="mt-7"
               isLoading={isSubmitting}
             />
             <View className="justify-between flex-row">
-            <Link href="/forgot-password" className="text-center text-lg text-gray-600 mt-1">
+            <Link href="/reset-password" className="text-center text-lg text-gray-600 mt-1">
                 Forgot a password?
             </Link>
             <Link href="sign-up"className="text-center text-lg text-blue-500 mt-1 underline">

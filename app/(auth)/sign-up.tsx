@@ -65,17 +65,22 @@ const SignUp = () => {
             <FormField
               placeholder="Password"
               value={form.password}
-              otherStyles={"w-11/12"}
+              otherStyles={"w-11/12 mb-4"}
                formStyles="border-2 border-gray-600 rounded-xl"
               handleChangeText={(e) => setForm({ ...form, password: e })}
               secureTextEntry
             />
-            <CustomButton
-              title="Create Account"
-              handlePress={submit}
-              containerStyles="mt-7 "
-              isLoading={isSubmitting}
-            />
+            <View style={{flexDirection: "row", marginTop: 4}}>
+              <Link href="sign-in"className="mr-4">
+                    Back
+              </Link>
+              <CustomButton
+                title="Create Account"
+                handlePress={submit}
+                containerStyles="mt-7"
+                isLoading={isSubmitting}
+              />
+            </View>
             
             
           </View>
