@@ -1,4 +1,4 @@
-import { View, Text, ActivityIndicator, Platform, Image, TouchableOpacity } from 'react-native';
+import { View, Text, ActivityIndicator, Platform, Image, TouchableOpacity, Keyboard, Alert } from 'react-native';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import MapView, { Marker, PROVIDER_DEFAULT, PROVIDER_GOOGLE } from "react-native-maps";
 import * as Location from 'expo-location';
@@ -9,6 +9,8 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useGlobalContext } from "@/context/GlobalProvider";
 import { router } from 'expo-router';
 import ChargerItem from '@/components/ChargerItem';
+import MapSearchBar from '@/components/MapSearchBar';
+import axios from 'axios';
 import ChargerDetailsSheet from '@/components/ChargerDetailsSheet';
 
 const Index = () => {
@@ -19,6 +21,7 @@ const Index = () => {
   const [selectedCharger, setSelectedCharger] = useState<Charger | null>(null);
   const [isMarkerPressed, setIsMarkerPressed] = useState(false);
   const [menuVisible, setMenuVisible] = useState(false); 
+  const [searchBarVisible, setSearchBarVisible] = useState(false); 
   const [chargerDetailsVisible, setChargerDetailsVisible] = useState(false);
   const mapRef = useRef(null);
   const menuSnapPoints = useMemo(() => ['66%'], []);
@@ -31,6 +34,86 @@ const Index = () => {
     menuSheetRef.current?.close();
   };
   const menuSheetRef = useRef(null);
+
+  //#region Search Bar Functionality
+  const MAPBOX_API_KEY = process.env.EXPO_PUBLIC_REACT_APP_MAPBOX_API_KEY;
+  const searchSnapPoints = useMemo(() => ['85%'], []);
+  const openSearchSheet = () => {
+    setSearchBarVisible(true);
+    searchSheetRef.current?.expand();
+  };
+  const closeSearchSheet = () => {
+    Keyboard.dismiss();
+    setSearchBarVisible(false); 
+    searchSheetRef.current?.close();
+  };
+  const searchSheetRef = useRef(null);
+
+  // Get location from search
+  const fetchSearchLocation = async (place: string) => {
+    try {
+      const response = await axios.get(
+        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(place)}.json`,
+        {
+          params: {
+            access_token: MAPBOX_API_KEY,
+          },
+        }
+      );
+
+      // Use first result
+      if (response.data.features && response.data.features.length > 0) {
+        const locationData = response.data.features[0];
+        const [longitude, latitude] = locationData.center;
+
+        // create new location object 
+        const newLocation: Location.LocationObject = {
+          coords: {
+            latitude,
+            longitude,
+            altitude: null,
+            accuracy: null,
+            altitudeAccuracy: null,
+            heading: null,
+            speed: null
+          },
+          timestamp: Date.now(),
+        };
+
+        if (newLocation && mapRef.current) {
+          mapRef.current.animateToRegion({
+            latitude: newLocation.coords.latitude,
+            longitude: newLocation.coords.longitude,
+            latitudeDelta: 0.03,
+            longitudeDelta: 0.03,
+          });
+        }
+      } else {
+        // If no results are found, show an alert
+        Alert.alert('No results found.');
+      }
+    } catch (error: unknown) {
+      // Check if the error is an instance of the built-in Error class
+      if (error instanceof Error) {
+        Alert.alert('Error fetching location', error.message);
+      } else {
+        Alert.alert('Error fetching location', 'An unknown error occurred.');
+      }
+    } finally {
+      //Close search sheet
+      Keyboard.dismiss();
+      setSearchBarVisible(false); // Set menu visibility to false
+      searchSheetRef.current?.close();
+    }
+  };
+
+  // Handler for search function
+  const handleSearch = (place: string) => {
+    fetchSearchLocation(place);
+  }; 
+  
+  //#endregion Search Bar Functionality
+  
   const fetchLocation = async () => {
     let { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== 'granted') {
@@ -130,7 +213,6 @@ const Index = () => {
       >
         {showMarkers()}
       </MapView>
-
       <View className="absolute bottom-32 pl-3 pr-3 right-1 left-1">
             {selectedCharger && !chargerDetailsVisible && (
               <ChargerItem
@@ -212,19 +294,48 @@ const Index = () => {
             </BottomSheetView>
            
           </BottomSheet>
-      {!menuVisible && !chargerDetailsVisible &&(
-          <TouchableOpacity onPress={openMenuSheet} className="absolute bottom-12 ">
-            <Image source={icons.menu} className="w-20 h-20" resizeMode="contain" />
+      
+      {/* Search Sheet */}
+      <BottomSheet 
+          ref={searchSheetRef}
+          snapPoints={searchSnapPoints}
+          enablePanDownToClose={true}
+          onClose={closeSearchSheet}
+          index={-1}> 
+        <BottomSheetView style={{ flex: 1, alignItems: 'center', justifyContent: 'top', backgroundColor: "#F6F6F7A6", opacity: "65%" }}>
+          <MapSearchBar onSearch={handleSearch}></MapSearchBar>
+          {showMarkers()}
+        </BottomSheetView>
+      </BottomSheet>
+
+      {/* Search Button */}
+      {!searchBarVisible && !menuVisible && !chargerDetailsVisible &&(
+        <TouchableOpacity onPress={openSearchSheet} className="absolute bottom-32 right-5">
+          <View style={{ width: 50, height: 50, backgroundColor: 'white', borderRadius: 40, justifyContent: 'center', alignItems: 'center' }}>
+            <TouchableOpacity onPress={openSearchSheet} style={{ width: 25, height: 25 }}>
+              <Image 
+                  source={icons.searchButton} 
+                  style={{ width: '100%', height: '100%' }} 
+                  resizeMode="contain" 
+              />
+            </TouchableOpacity>
+          </View>
+        </TouchableOpacity>
+      )}
+      {/* Menu */}
+      {!searchBarVisible && !menuVisible && !chargerDetailsVisible &&(
+        <TouchableOpacity onPress={openMenuSheet} className="absolute bottom-12 ">
+          <Image source={icons.menu} className="w-20 h-20" resizeMode="contain" />
         </TouchableOpacity>
           )}
-          {!menuVisible && !chargerDetailsVisible &&(
-          <TouchableOpacity onPress={centerMapOnUserLocation} className="absolute bottom-12 right-1 ">
-            <Image source={icons.plus} className="w-20 h-20" resizeMode="contain" />
-          </TouchableOpacity>
-          )}
+      {/* Center Map */}
+      {!searchBarVisible && !menuVisible && !chargerDetailsVisible &&(
+        <TouchableOpacity onPress={centerMapOnUserLocation} className="absolute bottom-12 right-1 ">
+          <Image source={icons.plus} className="w-20 h-20" resizeMode="contain" />
+        </TouchableOpacity>
+      )}
     </View>
     </GestureHandlerRootView>
-
   );
 };
 
