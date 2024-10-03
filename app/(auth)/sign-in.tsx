@@ -40,7 +40,7 @@ const SignIn = () => {
           {
             text: 'Reset Password',
             onPress: () => {
-              router.push('/forgot-password');
+              router.push('/reset-password');
             },
           },
         ],
@@ -102,7 +102,7 @@ const SignIn = () => {
               isLoading={isSubmitting}
             />
             <View className="justify-between flex-row">
-            <Link href="/forgot-password" className="text-center text-lg text-gray-600 mt-1">
+            <Link href="/reset-password" className="text-center text-lg text-gray-600 mt-1">
                 Forgot a password?
             </Link>
             <Link href="sign-up"className="text-center text-lg text-blue-500 mt-1 underline">
