@@ -36,14 +36,14 @@ const Index = () => {
 
   //#region Search Bar Functionality
   const MAPBOX_API_KEY = process.env.EXPO_PUBLIC_REACT_APP_MAPBOX_API_KEY;
-  const searchSnapPoints = useMemo(() => ['50%'], []);
+  const searchSnapPoints = useMemo(() => ['85%'], []);
   const openSearchSheet = () => {
     setSearchBarVisible(true);
     searchSheetRef.current?.expand();
   };
   const closeSearchSheet = () => {
     Keyboard.dismiss();
-    setSearchBarVisible(false); // Set menu visibility to false
+    setSearchBarVisible(false); 
     searchSheetRef.current?.close();
   };
   const searchSheetRef = useRef(null);
@@ -287,6 +287,7 @@ const Index = () => {
           index={-1}> 
         <BottomSheetView style={{ flex: 1, alignItems: 'center', justifyContent: 'top', backgroundColor: "#F6F6F7A6", opacity: "65%" }}>
           <MapSearchBar onSearch={handleSearch}></MapSearchBar>
+          {showMarkers()}
         </BottomSheetView>
       </BottomSheet>
 
