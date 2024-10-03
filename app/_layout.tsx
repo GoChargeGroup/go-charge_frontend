@@ -30,7 +30,10 @@ export default function RootLayout() {
     <Stack>
       <Stack.Screen name="index" options={{headerShown: false}} />
       <Stack.Screen name="(auth)" options={{headerShown: false}} />
+      <Stack.Screen name="(charger)" options={{headerShown: false}} />
       <Stack.Screen name="profile" options={{headerShown: false}} />
+      <Stack.Screen name="GenericFormProfile" options={{headerShown: false}} />
+
 
     </Stack>
     </GlobalProvider>

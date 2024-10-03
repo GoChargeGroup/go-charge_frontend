@@ -11,6 +11,7 @@ import { router } from 'expo-router';
 import ChargerItem from '@/components/ChargerItem';
 import MapSearchBar from '@/components/MapSearchBar';
 import axios from 'axios';
+import ChargerDetailsSheet from '@/components/ChargerDetailsSheet';
 
 const Index = () => {
   const [location, setLocation] = useState(null);
@@ -222,6 +223,22 @@ const Index = () => {
             )}
         </View>
 
+        {chargerDetailsVisible && selectedCharger && (
+            
+            <View className="absolute bottom-0 left-0 right-0 h-[85%] mt-10 rounded-xl">
+              <View> 
+              <ChargerItem
+                  charger={selectedCharger}
+                  userLocation={location}
+                  otherStyles={""}
+                />
+              </View>
+              
+              <ChargerDetailsSheet charger={selectedCharger} setSelectedCharger={setSelectedCharger} />
+            
+            </View>
+          )}  
+
       <BottomSheet
             ref={menuSheetRef}
             snapPoints={menuSnapPoints}
@@ -257,7 +274,7 @@ const Index = () => {
                   </View>
               </TouchableOpacity>
               <CustomButton
-              title="Became a partner"
+              title="Become a partner"
               handlePress={() => { router.push('become-partner'); }}
               picture={icons.light}
             /> 

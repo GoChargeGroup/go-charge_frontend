@@ -29,7 +29,8 @@ const SignUp = () => {
         const user = await signup(form.username, form.password, form.email, form.role); 
         setIsLoggedIn(true);
         setUser(user);
-        router.push('/');
+        Alert.alert('Success!', "Your account has been successfully created");
+        router.push('/profile');
 
       } catch (error) {
         Alert.alert('Error', error.message);
