@@ -16,7 +16,7 @@ import { getChargingStations } from '@/lib/authService';
 
 const Index = () => {
   const [location, setLocation] = useState(null);
-  const mapAnimRef, setAnimRef] = useRef();
+  const mapAnimRef = useRef();
   const {isLoggedIn, user} = useGlobalContext();
   const [chargers, setChargers] = useState([]);
   const [loading, setLoading] = useState(true); 
@@ -147,7 +147,7 @@ const Index = () => {
         })));
         
       } else {
-        console.log("No charging stations found");
+        alert("No charging stations found");
         setChargers([]);
       }
     } catch (err) {
