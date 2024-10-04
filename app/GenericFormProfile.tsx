@@ -25,7 +25,7 @@ const GenericFormProfile = () => {
               [fieldName]: value, 
             };
             console.log(updatedData);
-        
+        if(fieldName === "email") updatedData[fieldName] = value.toLowerCase();
         const updatedUser = await editUser(userId, updatedData);
         setUser(updatedUser);
       //   setUser((prevUser) => ({
