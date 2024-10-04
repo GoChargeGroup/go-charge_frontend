@@ -89,6 +89,8 @@ const Index = () => {
             longitudeDelta: 0.03,
           });
         }
+
+        setLocation(locationData.center)
       } else {
         // If no results are found, show an alert
         Alert.alert('No results found.');
@@ -127,6 +129,10 @@ const Index = () => {
     setLocation(coords);
   };
 
+  useEffect(() => {
+    fetchChargers();
+  }, [location])
+
   const fetchChargers = async () => {
     setLoading(true); 
 
@@ -154,7 +160,6 @@ const Index = () => {
 
   useEffect(() => {
     fetchLocation();
-    fetchChargers();
   }, []);
 
   const initialRegion = {
