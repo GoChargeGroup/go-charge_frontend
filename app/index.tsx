@@ -16,6 +16,7 @@ import { getChargingStations } from '@/lib/authService';
 
 const Index = () => {
   const [location, setLocation] = useState(null);
+  const mapAnimRef, setAnimRef] = useRef();
   const {isLoggedIn, user} = useGlobalContext();
   const [chargers, setChargers] = useState([]);
   const [loading, setLoading] = useState(true); 
@@ -189,12 +190,18 @@ const Index = () => {
   };
   const centerMapOnLocation = () => {
     if (location && mapRef.current) {
-      mapRef.current.animateToRegion({
-        latitude: location[1],
-        longitude: location[0],
-        latitudeDelta: 0.03,
-        longitudeDelta: 0.03,
-      });
+      if (mapAnimRef.current) {
+        clearTimeout(mapAnimRef.current);
+        mapAnimRef.current = null;
+      }
+      mapAnimRef.current = setTimeout(() => {
+        mapRef.current.animateToRegion({
+          latitude: location[1],
+          longitude: location[0],
+          latitudeDelta: 0.03,
+          longitudeDelta: 0.03,
+        });
+      }, 1000);
     }
   };
 
