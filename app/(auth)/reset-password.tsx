@@ -58,7 +58,7 @@ const ResetPassword = () => {
                         formStyles="border-2 border-gray-600 rounded-xl"
                         keyboardType="email-address"
                     />
-                    <CustomButton title="Submit" onPress={sendResetEmail} />
+                    <CustomButton title="Submit" handlePress={sendResetEmail} />
                     <Link href="sign-in" className="text-center text-lg text-blue-500 mt-1 underline">
                         Back to login
                     </Link>
@@ -77,20 +77,20 @@ const ResetPassword = () => {
                         keyboardType="numeric"
                     />
                     <FormField
+                        title="Password"
                         placeholder="New Password"
                         value={newPassword}
                         onChangeText={setNewPassword}
                         otherStyles="w-11/12"
                         formStyles="border-2 border-gray-600 rounded-xl"
-                        secureTextEntry
                     />
                     <FormField
+                        title="Password"
                         placeholder="Confirm New Password"
                         value={confirmPassword}
                         onChangeText={setConfirmPassword}
                         otherStyles="w-11/12 mb-2"
                         formStyles="border-2 border-gray-600 rounded-xl"
-                        secureTextEntry
                     />
                     <CustomButton title="Reset Password" handlePress={submitPasswordReset} containerStyles={undefined} textStyles={undefined} isLoading={undefined} picture={undefined} />
                     <View style={{flexDirection: "row"}}>
