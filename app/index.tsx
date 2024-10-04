@@ -81,15 +81,6 @@ const Index = () => {
           timestamp: Date.now(),
         };
 
-        if (newLocation && mapRef.current) {
-          mapRef.current.animateToRegion({
-            latitude: newLocation.coords.latitude,
-            longitude: newLocation.coords.longitude,
-            latitudeDelta: 0.03,
-            longitudeDelta: 0.03,
-          });
-        }
-
         setLocation(locationData.center)
       } else {
         // If no results are found, show an alert
@@ -168,6 +159,7 @@ const Index = () => {
 
   useEffect(() => {
     if (location) {
+      centerMapOnLocation();
       fetchChargers(); 
     }
   }, [location]);
@@ -195,7 +187,7 @@ const Index = () => {
       setIsMarkerPressed(false);
     }
   };
-  const centerMapOnUserLocation = () => {
+  const centerMapOnLocation = () => {
     if (location && mapRef.current) {
       mapRef.current.animateToRegion({
         latitude: location[1],
@@ -365,7 +357,7 @@ const Index = () => {
           )}
       {/* Center Map */}
       {!searchBarVisible && !menuVisible && !chargerDetailsVisible &&(
-        <TouchableOpacity onPress={centerMapOnUserLocation} className="absolute bottom-12 right-1 ">
+        <TouchableOpacity onPress={centerMapOnLocation} className="absolute bottom-12 right-1 ">
           <Image source={icons.plus} className="w-20 h-20" resizeMode="contain" />
         </TouchableOpacity>
       )}
