@@ -147,7 +147,7 @@ const Index = () => {
         })));
         
       } else {
-        console.log("No charging stations found");
+        alert("No charging stations found");
         setChargers([]);
       }
     } catch (err) {
