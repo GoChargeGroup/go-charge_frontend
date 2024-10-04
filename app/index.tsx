@@ -134,7 +134,10 @@ const Index = () => {
     
     ];
     setChargers(chargersData);
-    setLoading(false); 
+    setTimeout(()=>{
+      setLoading(false); 
+    }, 1500)
+   
   };
 
   useEffect(() => {
