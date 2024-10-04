@@ -309,7 +309,7 @@ const Index = () => {
       </BottomSheet>
 
       {/* Search Button */}
-      {!searchBarVisible && !menuVisible && !chargerDetailsVisible &&(
+      {!searchBarVisible && !menuVisible && !chargerDetailsVisible && !selectedCharger &&(
         <TouchableOpacity onPress={openSearchSheet} className="absolute bottom-32 right-5">
           <View style={{ width: 50, height: 50, backgroundColor: 'white', borderRadius: 40, justifyContent: 'center', alignItems: 'center' }}>
             <TouchableOpacity onPress={openSearchSheet} style={{ width: 25, height: 25 }}>

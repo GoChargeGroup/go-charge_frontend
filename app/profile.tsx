@@ -2,7 +2,7 @@ import { View, Text, TouchableOpacity, Image, Switch, ScrollView, Alert } from '
 import React, { useEffect, useState } from 'react';
 import { useGlobalContext } from '@/context/GlobalProvider';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { router } from 'expo-router';
+import { router, useNavigation } from 'expo-router';
 import { icons } from '@/constants';
 import { AntDesign } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
@@ -13,6 +13,8 @@ const Profile = () => {
   const { user, setUser, setIsLoggedIn, isLoading } = useGlobalContext();
   const [carChargingNotifications, setCarChargingNotifications] = useState(true);
   const [promotionsNotifications, setPromotionsNotifications] = useState(true);
+  const navigation = useNavigation();
+
 
   useEffect(() => {
     if (!user && !isLoading) {
@@ -84,11 +86,22 @@ const Profile = () => {
     });
   };
 
+  const handleGoBack = () => {
+    const routes = navigation.getState().routes; // Get the current navigation state
+    const previousRoute = routes[routes.length - 2]; // Get the previous route
+
+    if (previousRoute && previousRoute.name === '(auth)') {
+      router.push('/');
+    } else {
+      router.back(); 
+    }
+  };
+
   return (
     <SafeAreaView className="bg-customWhite-200 h-full">
       <ScrollView>
         <View className="flex-row items-center px-4 py-4">
-          <TouchableOpacity onPress={() => router.back()} className="mr-24">
+          <TouchableOpacity onPress={handleGoBack} className="mr-24">
             <AntDesign name="arrowleft" size={24} color="black" />
           </TouchableOpacity>
           <Text className="text-2xl font-sfbold">Profile</Text>

@@ -1,4 +1,4 @@
-import { View, Text, Image, KeyboardAvoidingView, Platform, Alert } from 'react-native'
+import { View, Text, Image, KeyboardAvoidingView, Platform, Alert, Modal, TouchableOpacity } from 'react-native'
 import React, { useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { ScrollView, GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -17,8 +17,10 @@ const SignUp = () => {
     role: 'user',
   })
   const [isSubmitting, setIsSubmitting] = useState(false);
-
+  const [isModalVisible, setModalVisible] = useState(false);
+  const [passwordVisible, setPasswordVisible] = useState(false); 
   const submit= async ()=>{
+    setModalVisible(false);
     if(!form.username || !form.email || !form.password){
       Alert.alert('Error', 'Please fill in all the fields');
       return; 
@@ -76,7 +78,7 @@ const SignUp = () => {
               </Link>
               <CustomButton
                 title="Create Account"
-                handlePress={submit}
+                handlePress={() => {setModalVisible(!isModalVisible);}}
                 containerStyles="mt-7"
                 isLoading={isSubmitting}
               />
@@ -84,6 +86,60 @@ const SignUp = () => {
             
             
           </View>
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={isModalVisible}
+            onRequestClose={() => {
+              setModalVisible(!isModalVisible);
+            }}
+          >
+            <View style={{
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center',
+                backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent background
+              }}>
+              <View style={{
+                width: 300,
+                padding: 20,
+                backgroundColor: 'white',
+                borderRadius: 10}}>
+                <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 15 }}>
+                  Confirm Information
+                </Text>
+                <Text style={{marginBottom: 4}}>Email: {form.email}</Text>
+                <Text style={{marginBottom: 4}}>Username: {form.username}</Text>
+                <Text style={{marginBottom: 4}}>Password:</Text>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 20 }}>
+                    <Text
+                      style={{
+                        flex: 1,
+                        borderColor: 'gray',
+                        borderWidth: 1,
+                        borderRadius: 5,
+                        padding: 10,
+                        backgroundColor: '#f0f0f0',
+                      }}
+                    >
+                      {passwordVisible ? form.password : '••••••••'}
+                    </Text>
+                    <TouchableOpacity
+                      onPress={() => setPasswordVisible(!passwordVisible)}
+                      style={{ marginLeft: 10 }}
+                    >
+                      <Text>{passwordVisible ? 'Hide' : 'Show'}</Text>
+                    </TouchableOpacity>
+                  </View>
+                <View style={{
+                  flexDirection: "row",
+                  justifyContent: 'space-between',}}>
+                  <CustomButton title="Back" handlePress={() => setModalVisible(false)} />
+                  <CustomButton title="Confirm" handlePress={submit} isLoading={isSubmitting} />
+                </View>
+              </View>
+            </View>
+          </Modal>
         </ScrollView>
       </SafeAreaView>
     </GestureHandlerRootView>

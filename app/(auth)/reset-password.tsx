@@ -4,9 +4,12 @@ import { Link, router } from 'expo-router';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import FormField from '@/components/FormField';
 import { resetPassword, sendEmailVerification } from '@/lib/authService';
+import { useGlobalContext } from '@/context/GlobalProvider';
 import { Route } from 'expo-router/build/Route';
+import CustomButton from '@/components/CustomButton';
 
 const ResetPassword = () => {
+  const { setIsLoggedIn, setUser } = useGlobalContext();
   const [email, setEmail] = useState('');
   const [isEmailSent, setIsEmailSent] = useState(false);
   const [newPassword, setNewPassword] = useState('');
@@ -24,8 +27,11 @@ const ResetPassword = () => {
   const submitPasswordReset = async () => {
     if (newPassword === confirmPassword) {
       try {
-        await resetPassword(otp, newPassword);
-        router.push('/sign-in');
+        const user = await resetPassword(otp, newPassword);
+        setIsEmailSent(false);
+        setUser(user);
+        setIsLoggedIn(true);
+        router.push('/');
       } catch (error) {
         Alert.alert('Error', error.message);
         setIsEmailSent(false);
@@ -52,7 +58,7 @@ const ResetPassword = () => {
                         formStyles="border-2 border-gray-600 rounded-xl"
                         keyboardType="email-address"
                     />
-                    <Button title="Submit" onPress={sendResetEmail} />
+                    <CustomButton title="Submit" onPress={sendResetEmail} />
                     <Link href="sign-in" className="text-center text-lg text-blue-500 mt-1 underline">
                         Back to login
                     </Link>
@@ -86,10 +92,10 @@ const ResetPassword = () => {
                         formStyles="border-2 border-gray-600 rounded-xl"
                         secureTextEntry
                     />
-                    <Button title="Reset Password" onPress={submitPasswordReset} />
+                    <CustomButton title="Reset Password" handlePress={submitPasswordReset} containerStyles={undefined} textStyles={undefined} isLoading={undefined} picture={undefined} />
                     <View style={{flexDirection: "row"}}>
-                        <Button title="Back" onPress={() => setIsEmailSent(false)} />
-                        <Button title="Resend Email" onPress={sendResetEmail} />
+                        <CustomButton title="Back" handlePress={() => setIsEmailSent(false)} />
+                        <CustomButton title="Resend Email" handlePress={sendResetEmail} />
                     </View>
                     </>
                 )}
