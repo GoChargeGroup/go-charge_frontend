@@ -207,7 +207,6 @@ const Index = () => {
   };
 
   const showMarkers = () => {
-    console.log(chargers);
     return chargers.map((item, index) => (
       <Marker
         key={index}
