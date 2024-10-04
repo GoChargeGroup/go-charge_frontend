@@ -20,6 +20,7 @@ import kabel from "../assets/icons/kabel.png";
 import starFilled from "../assets/icons/starFilled.png";
 import x from "../assets/icons/x.png";
 import logo from "../assets/icons/zaryadka.png";
+import map from "../assets/icons/map.png";
 export default {
   play,
   bookmark,
@@ -43,4 +44,5 @@ export default {
   starFilled,
   x,
   logo,
+  map
 };

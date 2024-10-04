@@ -103,6 +103,7 @@ const Profile = () => {
         <View className="flex-row items-center px-4 py-4">
           <TouchableOpacity onPress={handleGoBack} className="mr-24">
             <AntDesign name="arrowleft" size={24} color="black" />
+            <Image source={icons.map} className="w-6 h-6" resizeMode="contain"/>
           </TouchableOpacity>
           <Text className="text-2xl font-sfbold">Profile</Text>
         </View>
