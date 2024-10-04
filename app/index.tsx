@@ -129,37 +129,51 @@ const Index = () => {
     setLocation(coords);
   };
 
-  useEffect(() => {
-    fetchChargers();
-  }, [location])
+ 
 
   const fetchChargers = async () => {
+    if (!location) {
+      console.log("Location not available, skipping fetchChargers");
+      return;
+    }
     setLoading(true); 
 
     try {
-      const stations = await getChargingStations(location, 1000, 20);
-      setChargers(stations.map((x: object) => ({
-        ...x,
-        id: x._id,
-        pictures: x.picture_urls,
-        latitude: x.coordinates[1],
-        longitude: x.coordinates[0],
-        isWorking: true,
-        working_hours: "24/7",
-        price: 20,
-        contact: "Daddy Mitch",
-        amount: 1,
-      })));
+      const stations = await getChargingStations(location, 200000, 20);
+      if (stations && stations.length > 0) {
+        setChargers(stations.map((x: object) => ({
+          ...x,
+          id: x._id,
+          pictures: x.picture_urls,
+          latitude: x.coordinates[1],
+          longitude: x.coordinates[0],
+          isWorking: true,
+          working_hours: "24/7",
+          price: 20,
+          contact: "Daddy Mitch",
+          amount: 1,
+        })));
+        
+      } else {
+        console.log("No charging stations found");
+        setChargers([]);
+      }
     } catch (err) {
-      alert("Error fetching nearby charging stations")
-      setChargers([])
+      console.error("Error fetching nearby charging stations:", err);
+      Alert.alert("Error", "Error fetching nearby charging stations");
     }
 
     setLoading(false); 
   };
 
   useEffect(() => {
-    fetchLocation();
+    if (location) {
+      fetchChargers(); 
+    }
+  }, [location]);
+  
+  useEffect(() => {
+    fetchLocation(); 
   }, []);
 
   const initialRegion = {
@@ -184,8 +198,8 @@ const Index = () => {
   const centerMapOnUserLocation = () => {
     if (location && mapRef.current) {
       mapRef.current.animateToRegion({
-        latitude: location.coords.latitude,
-        longitude: location.coords.longitude,
+        latitude: location[1],
+        longitude: location[0],
         latitudeDelta: 0.03,
         longitudeDelta: 0.03,
       });
@@ -193,6 +207,7 @@ const Index = () => {
   };
 
   const showMarkers = () => {
+    console.log(chargers);
     return chargers.map((item, index) => (
       <Marker
         key={index}
@@ -234,13 +249,13 @@ const Index = () => {
         {showMarkers()}
       </MapView>
       <View className="absolute bottom-32 pl-3 pr-3 right-1 left-1">
-            {selectedCharger && !chargerDetailsVisible && (
-              <ChargerItem
-                charger={selectedCharger}
-                userLocation={location}
-                onPress={() => setChargerDetailsVisible(true)}
-              />
-            )}
+      {selectedCharger && selectedCharger.latitude && selectedCharger.longitude && !chargerDetailsVisible && (
+        <ChargerItem
+          charger={selectedCharger}
+          userLocation={location}
+          onPress={() => setChargerDetailsVisible(true)}
+        />
+      )}
         </View>
 
         {chargerDetailsVisible && selectedCharger && (

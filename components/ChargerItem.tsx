@@ -6,11 +6,13 @@ import { icons } from '@/constants';
 
 const ChargerItem = ({ charger, userLocation, onPress, otherStyles }) => {
   const navigation = useNavigation();
-  const userCoords = userLocation ? { latitude: userLocation.coords.latitude, longitude: userLocation.coords.longitude } : null;
+  const userCoords = userLocation ? { latitude: userLocation[1], longitude: userLocation[0] } : null;
+  
   const distance = userCoords ? haversineDistance(userCoords, { latitude: charger.latitude, longitude: charger.longitude }) : null;
   const [averageRating, setAverageRating] = useState(0);
 
   useEffect(() => {
+    
     const fetchReviews = async () => {
       try {
         // const reviewsData = await getReviewsByChargerId(charger.$id);
