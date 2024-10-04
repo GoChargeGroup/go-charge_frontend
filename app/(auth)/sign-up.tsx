@@ -25,10 +25,13 @@ const SignUp = () => {
       Alert.alert('Error', 'Please fill in all the fields');
       return; 
     }
+    if(!verifyInput()) {
+      return;
+    }
     setIsSubmitting(true);
       try {
         // const result = await createUser(form.email, form.password, form.username);
-        const user = await signup(form.username, form.password, form.email, form.role); 
+        const user = await signup(form.username, form.password, form.email.toLowerCase(), form.role); 
         setIsLoggedIn(true);
         setUser(user);
         Alert.alert('Success!', "Your account has been successfully created");
@@ -40,6 +43,19 @@ const SignUp = () => {
         setIsSubmitting(false);
       }
     
+  }
+
+  function verifyInput() {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (form.username.includes(' ')) {
+        Alert.alert("Error", "Username cannot contain spaces");
+        return false;
+      }
+      if (!emailRegex.test(form.email)) {
+        Alert.alert("Error", "Email is invalid");
+        return false;
+      } 
+      else return true;
   }
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>

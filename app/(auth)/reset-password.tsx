@@ -18,7 +18,7 @@ const ResetPassword = () => {
 
   const sendResetEmail = async () => {
     try {
-        setIsEmailSent(await sendEmailVerification(email));
+        setIsEmailSent(await sendEmailVerification(email.toLowerCase()));
     } catch (error) {
         Alert.alert('Error', error.message);
     }
