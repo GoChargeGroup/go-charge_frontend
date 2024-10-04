@@ -17,27 +17,46 @@ const GenericFormProfile = () => {
   const [value, setValue] = useState(fieldValue);
   
   const handleSave = async () => {
-    try {
-        const updatedData = {
-            username: user.username, 
-            email: user.email, 
-            [fieldName]: value, 
-          };
-          console.log(updatedData);
-      
-      const updatedUser = await editUser(userId, updatedData);
-      setUser(updatedUser);
-    //   setUser((prevUser) => ({
-    //     ...prevUser,
-    //     [fieldName]: value,
-    //   }));
-      Alert.alert('Success', `${fieldName} updated successfully`);
-      navigation.goBack();
-    } catch (error) {
-      console.error('Failed to update user profile:', error);
-      Alert.alert('Error', `Failed to update ${fieldName}`);
+    if(verifyInput()) {
+      try {
+          const updatedData = {
+              username: user.username, 
+              email: user.email, 
+              [fieldName]: value, 
+            };
+            console.log(updatedData);
+        
+        const updatedUser = await editUser(userId, updatedData);
+        setUser(updatedUser);
+      //   setUser((prevUser) => ({
+      //     ...prevUser,
+      //     [fieldName]: value,
+      //   }));
+        Alert.alert('Success', `${fieldName} updated successfully`);
+        navigation.goBack();
+      } catch (error) {
+        console.error('Failed to update user profile:', error);
+        Alert.alert('Error', `Failed to update ${fieldName}`);
+      }
     }
   };
+  function verifyInput() {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    switch(fieldName) {
+      case ("username"):
+        if (value.includes(' ')) {
+          Alert.alert("Error", "Username cannot contain spaces");
+          return false;
+        } else return true;
+      case("email"):
+        if (!emailRegex.test(value)) {
+          Alert.alert("Error", "Email is invalid");
+          return false;
+        } else return true;
+      default: 
+        return true;
+    }
+  }
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -46,7 +65,7 @@ const GenericFormProfile = () => {
           <TouchableOpacity onPress={() => navigation.goBack()} className="mr-14">
             <AntDesign name="arrowleft" size={24} color="black" />
           </TouchableOpacity>
-          <Text className="text-2xl font-sfbold ml-2">Enter Your {displayName}</Text>
+          <Text className="text-2xl font-sfbold ml-2">Enter New {displayName}</Text>
         </View>
         <ScrollView>
           <View className="w-full  min-h-[80vh] px-4 my-6">
