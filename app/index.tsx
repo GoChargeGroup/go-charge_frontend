@@ -16,7 +16,7 @@ import { getChargingStations } from '@/lib/authService';
 
 const Index = () => {
   const [location, setLocation] = useState(null);
-  const mapAnimRef, setAnimRef] = useRef();
+  const mapAnimRef = useRef();
   const {isLoggedIn, user} = useGlobalContext();
   const [chargers, setChargers] = useState([]);
   const [loading, setLoading] = useState(true); 
