@@ -7,7 +7,7 @@ import { icons } from '@/constants';
 import { AntDesign } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import CustomButton from '@/components/CustomButton';
-import { deleteUser } from '@/lib/authService';
+import { deleteUser, logout } from '@/lib/authService';
 
 const Profile = () => {
   const { user, setUser, setIsLoggedIn, isLoading } = useGlobalContext();
@@ -62,7 +62,17 @@ const Profile = () => {
       { cancelable: true }
     );
   };
-  
+  const onLogoutPress = async () => {
+    try {
+      await logout();
+      setUser(null);
+      setIsLoggedIn(false); 
+      router.replace('/sign-in'); 
+    } catch (error) {
+      console.error('Logout failed:', error);
+      Alert.alert('Error', 'Failed to log out. Please try again.');
+    }
+  };
   if (isLoading) {
     return (
       <SafeAreaView className="bg-primary h-full">
@@ -161,7 +171,7 @@ const Profile = () => {
               handlePress={() => { router.push('become-partner'); }}
               picture={icons.light}
             /> 
-        <TouchableOpacity className="bg-gray-200 p-4 rounded-lg mt-4 flex-row justify-between items-center" >
+        <TouchableOpacity className="bg-gray-200 p-4 rounded-lg mt-4 flex-row justify-between items-center" onPress={onLogoutPress} >
           <Text className="text-red-500 font-sfbold text-lg">Logout</Text>
             <AntDesign name="right" size={20} color="red" />
           </TouchableOpacity>
