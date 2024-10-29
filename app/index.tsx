@@ -131,7 +131,12 @@ const Index = () => {
     setLoading(true); 
 
     try {
-      const stations = await getChargingStations(location, 200000, 20);
+      const stations = await getChargingStations({
+        coordinates: location,
+        max_radius: 200000,
+        max_results: 20,
+      
+      });
       if (stations && stations.length > 0) {
         setChargers(stations.map((x: object) => ({
           ...x,
