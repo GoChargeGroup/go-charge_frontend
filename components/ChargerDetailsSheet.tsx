@@ -9,7 +9,7 @@ import CustomButton from './CustomButton';
 import ReviewForm from '@/app/(charger)/reviewForm';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScrollView } from 'react-native-gesture-handler';
-import { router } from 'expo-router';
+import { router, useNavigation, useRouter } from 'expo-router';
 const PhotosTab = ({ charger, setSelectedCharger }) => {
     if (!charger) {
       return <Text>Loading...</Text>;
@@ -207,18 +207,33 @@ const PhotosTab = ({ charger, setSelectedCharger }) => {
 
   const ChargersListTab = ({ charger }) => {
     const chargers = charger.chargers || []; // Assuming 'charger.chargers' contains the list
-  
+    const navigation = useNavigation();
+    const router = useRouter();
+
+    const handleChargerPress = (selectedCharger) => {
+      console.log(selectedCharger)
+      router.push({
+        pathname: '/ChargerDetails',
+        params: {
+          charger: JSON.stringify(selectedCharger), // Convert charger object to string
+        },
+      });
+    };
+
+   
     return (
       <View className="flex-1 px-4 py-4">
         {chargers.length > 0 ? (
           <FlatList
             data={chargers}
             renderItem={({ item }) => (
-              <View className="bg-white rounded-lg p-4 mb-4">
-                <Text className="text-lg font-bold">{item.name}</Text>
-                <Text className="text-base">{item.description}</Text>
-                {/* Display other charger details as needed */}
-              </View>
+              <TouchableOpacity onPress={() => handleChargerPress(item)}>
+                <View className="bg-white rounded-lg p-4 mb-4">
+                  <Text className="text-lg font-bold">{item.name}</Text>
+                  <Text className="text-base">{item.description}</Text>
+                  {/* Display other charger details as needed */}
+                </View>
+              </TouchableOpacity>
             )}
             keyExtractor={(item) => item.id?.toString() || Math.random().toString()}
           />

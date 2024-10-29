@@ -61,8 +61,8 @@ const ChargerItem = ({ charger, userLocation, onPress, otherStyles }) => {
                 />
                 <Text className="font-sfbold text-xl text-black ml-2">{charger.name}</Text>
               </View>
-              <Text className={`text-lg font-sfregular ${charger.isWorking ? 'text-green-100' : 'text-red-500'}`}>
-                {charger.isWorking ? 'Open' : 'Busy'}
+              <Text className={`text-lg font-sfregular ${charger.is_public ? 'text-green-100' : 'text-red-500'}`}>
+                {charger.is_public ? 'Public Station' : 'Private Station'}
               </Text>
             </View>
           </View>
@@ -80,7 +80,7 @@ const ChargerItem = ({ charger, userLocation, onPress, otherStyles }) => {
             <Image source={icons.kabel} className="w-6 h-6 p-4" />
             <Text className="font-sfbold text-xl ml-2">Description:</Text>
           </View>
-          <Text className="font-sfregular text-sm text-green-100 text-base">{charger.price} USD kWt</Text>
+          <Text className="font-sfregular text-sm text-green-100 text-base">Total Chargers:{charger.chargers ? charger.chargers.length : 0}</Text>
         </View>
         <View className="flex-row justify-between items-center mt-1 ml-8">
           {charger.description && (
