@@ -1,18 +1,17 @@
 import React, { useState } from 'react';
-import { Modal, View, Text, TouchableOpacity } from 'react-native';
+import { Modal, Image, View, Text, TouchableOpacity } from 'react-native';
 import Slider from '@react-native-community/slider';
-import DropDownPicker from 'react-native-dropdown-picker';
+import { MultiSelect } from 'react-native-element-dropdown';
 import { Checkbox } from 'expo-checkbox';
+import { icons } from '@/constants';
 
 const FilterModal = ({ isModalVisible, setModalVisible, applyOptions }) => {
-  // State for minimum price, max distance, plug types, power output levels, and status
   const [maxPrice, setMaxPrice] = useState(75);
   const [maxDistance, setMaxDistance] = useState(10);
-  const [selectedPlugType, setSelectedPlugType] = useState('all');
-  const [plugTypeOpen, setPlugTypeOpen] = useState(false);
+  const [selectedPlugTypes, setSelectedPlugTypes] = useState(['type1', 'type2', 'ccs', 'chademo']);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const [plugTypeItems, setPlugTypeItems] = useState([
-    { label: 'All Plug Types', value: 'all' },
     { label: 'Type 1', value: 'type1' },
     { label: 'Type 2', value: 'type2' },
     { label: 'CCS', value: 'ccs' },
@@ -45,6 +44,32 @@ const FilterModal = ({ isModalVisible, setModalVisible, applyOptions }) => {
     setStatus(updatedStatus);
   };
 
+  const _renderItem = (item, selected) => {
+    return (
+      <View 
+        style={{
+          paddingVertical: 10,
+          paddingHorizontal: 4,
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}>
+          <Text style={{ paddingLeft: 5, flex: 1, fontSize: 16 }}>{item.label}</Text>
+          {selected && (
+            <Image
+              style={{
+                marginRight: 5,
+                width: 18,
+                height: 18,
+              }}
+              source={icons.checkmark}
+              resizeMode="contain"
+            />
+          )}
+      </View>
+    );
+  };
+
   return (
     <Modal
       animationType="slide"
@@ -62,7 +87,7 @@ const FilterModal = ({ isModalVisible, setModalVisible, applyOptions }) => {
           width: 300,
           padding: 20,
           backgroundColor: 'white',
-          borderRadius: 10
+          borderRadius: 10,
         }}>
           <Text style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 15 }}>
             Search Options
@@ -90,19 +115,26 @@ const FilterModal = ({ isModalVisible, setModalVisible, applyOptions }) => {
 
           {/* EV Charger Plug Types */}
           <Text style={{ fontWeight: 'bold', marginTop: 10 }}>Plug Type:</Text>
-          <DropDownPicker
-            open={plugTypeOpen}
-            value={selectedPlugType}
-            items={plugTypeItems}
-            setOpen={setPlugTypeOpen}
-            setValue={setSelectedPlugType}
-            setItems={setPlugTypeItems}
-            containerStyle={{ height: 40 }}
-            style={{ borderColor: '#ccc', borderWidth: 1, borderRadius: 5, marginTop: 5 }}
-          />
+          <MultiSelect
+                    style={{ backgroundColor: 'white', borderBottomColor: 'gray', borderBottomWidth: 0.5, marginTop: 5 }}
+                    data={plugTypeItems}
+                    labelField="label"
+                    valueField="value"
+                    label="Multi Select"
+                    placeholder="Select items"
+                    value={selectedPlugTypes}
+                    onChange={item => {
+                      setSelectedPlugTypes(item);
+                    }}
+                    renderItem={item => _renderItem(item, selectedPlugTypes.includes(item.value))}
+                    selectedStyle={{ borderRadius: 4 }}
+                    onFocus={() => setDropdownOpen(true)}
+                    onBlur={() => setDropdownOpen(false)} 
+                />
 
           {/* Charger Power Output Level */}
-          <Text style={{ fontWeight: 'bold', marginTop: 25 }}>Power Output Level:</Text>
+          <Text style={[{ fontWeight: 'bold' }, 
+                      selectedPlugTypes.length > 0 ? dropdownOpen? { marginTop:50 } : {marginTop: 5} : {marginTop: 20}  ]}>Power Output Level:</Text>
           {powerLevels.map(item => (
             <View key={item.value} style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 5 }}>
               <Checkbox
@@ -135,7 +167,7 @@ const FilterModal = ({ isModalVisible, setModalVisible, applyOptions }) => {
             <TouchableOpacity onPress={() => setModalVisible(false)}>
               <Text style={{ color: 'blue', fontWeight: 'bold', fontSize: 16 }}>Back</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => applyOptions({ maxPrice, maxDistance, selectedPlugType, powerLevels, status })}>
+            <TouchableOpacity onPress={() => applyOptions({ maxPrice, maxDistance, selectedPlugTypes, powerLevels, status })}>
               <Text style={{ color: 'blue', fontWeight: 'bold', fontSize: 16 }}>Apply</Text>
             </TouchableOpacity>
           </View>

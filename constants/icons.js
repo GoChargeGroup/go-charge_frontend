@@ -1,4 +1,5 @@
 import bookmark from "../assets/icons/bookmark.png";
+import checkmark from "../assets/icons/checkmark.png";
 import gear from "../assets/icons/gear.png";
 import home from "../assets/icons/home.png";
 import plus from "../assets/icons/plus.png";
@@ -25,6 +26,7 @@ import logo from "../assets/icons/zaryadka.png";
 import map from "../assets/icons/map.png";
 export default {
   play,
+  checkmark,
   gear,
   bookmark,
   home,
