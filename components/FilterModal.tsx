@@ -135,7 +135,7 @@ const FilterModal = ({ isModalVisible, setModalVisible, applyOptions }) => {
             <TouchableOpacity onPress={() => setModalVisible(false)}>
               <Text style={{ color: 'blue', fontWeight: 'bold', fontSize: 16 }}>Back</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => applyOptions({ maxPrice, maxDistance, plugTypeItems, powerLevels, status })}>
+            <TouchableOpacity onPress={() => applyOptions({ maxPrice, maxDistance, selectedPlugType, powerLevels, status })}>
               <Text style={{ color: 'blue', fontWeight: 'bold', fontSize: 16 }}>Apply</Text>
             </TouchableOpacity>
           </View>
