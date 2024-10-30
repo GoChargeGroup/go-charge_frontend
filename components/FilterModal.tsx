@@ -116,7 +116,7 @@ const FilterModal = ({ isModalVisible, setModalVisible, applyOptions }) => {
           {/* EV Charger Plug Types */}
           <Text style={{ fontWeight: 'bold', marginTop: 10 }}>Plug Type:</Text>
           <MultiSelect
-                    style={{ backgroundColor: 'white', borderBottomColor: 'gray', borderBottomWidth: 0.5, marginTop: 5 }}
+                    style={{ backgroundColor: 'white', borderBottomColor: 'gray', borderBottomWidth: 0.5, marginTop: 5, padding: 4 }}
                     data={plugTypeItems}
                     labelField="label"
                     valueField="value"
@@ -127,14 +127,14 @@ const FilterModal = ({ isModalVisible, setModalVisible, applyOptions }) => {
                       setSelectedPlugTypes(item);
                     }}
                     renderItem={item => _renderItem(item, selectedPlugTypes.includes(item.value))}
-                    selectedStyle={{ borderRadius: 4 }}
+                    selectedStyle={{ borderRadius: 4, marginTop: 5, marginBottom: 0 }}
                     onFocus={() => setDropdownOpen(true)}
                     onBlur={() => setDropdownOpen(false)} 
                 />
 
           {/* Charger Power Output Level */}
           <Text style={[{ fontWeight: 'bold' }, 
-                      selectedPlugTypes.length > 0 ? dropdownOpen? { marginTop:50 } : {marginTop: 5} : {marginTop: 20}  ]}>Power Output Level:</Text>
+                      selectedPlugTypes.length > 0 ? dropdownOpen? { marginTop:47.5 } : {marginTop: 15} : {marginTop: 15}  ]}>Power Output Level:</Text>
           {powerLevels.map(item => (
             <View key={item.value} style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 5 }}>
               <Checkbox
