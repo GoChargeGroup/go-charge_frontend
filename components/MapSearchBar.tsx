@@ -7,13 +7,19 @@ import FilterModal from './FilterModal';
 
 interface MapSearchBarProps {
   onSearch: (query: string) => void; 
+  applyOptions: (options: {
+    maxPrice: number;
+    maxDistance: number;
+    selectedPlugType: string;
+    selectedPowerLevels: string[];
+    selectedStatus: string[];
+  }) => void;
 }
 
-const MapSearchBar: React.FC<MapSearchBarProps> = ({ onSearch }) => {
+const MapSearchBar: React.FC<MapSearchBarProps> = ({ onSearch, applyOptions }) => {
   const [query, setQuery] = useState<string>('');
   const [suggestions, setSuggestions] = useState<any[]>([]);
   const [isModalVisible, setModalVisible] = useState(false);
-
 
   const handleInputChange = async (text: string) => {
     setQuery(text);
@@ -43,13 +49,6 @@ const MapSearchBar: React.FC<MapSearchBarProps> = ({ onSearch }) => {
     setQuery('');
     setSuggestions([]);
   };
-
-  const applyOptions = () => {
-    // Handle functionality for filter here
-
-    // Close filter modal
-    setModalVisible(false);
-  }
 
   const renderSuggestion = ({ item }: { item: any }) => (
     <TouchableOpacity onPress={() => handleSuggestionSelect(item.place_name)}>

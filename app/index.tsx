@@ -24,6 +24,13 @@ const Index = () => {
   const [isMarkerPressed, setIsMarkerPressed] = useState(false);
   const [menuVisible, setMenuVisible] = useState(false); 
   const [searchBarVisible, setSearchBarVisible] = useState(false); 
+  const [savedFilter, setSavedFilter] = useState<{
+    maxPrice: number;
+    maxDistance: number;
+    selectedPlugType: string;
+    powerLevels: { label: string; value: string; checked: boolean }[];
+    status: { label: string; value: string; checked: boolean }[];
+  } | null>(null);
   const [chargerDetailsVisible, setChargerDetailsVisible] = useState(false);
   const mapRef = useRef(null);
   const menuSnapPoints = useMemo(() => ['66%'], []);
@@ -108,6 +115,22 @@ const Index = () => {
   }; 
   
   //#endregion Search Bar Functionality
+
+  //#region Filter Functionality
+  const applyFilterOptions = (filter: {
+    maxPrice: number;
+    maxDistance: number;
+    selectedPlugType: string;
+    powerLevels: { label: string; value: string; checked: boolean }[];
+    status: { label: string; value: string; checked: boolean }[];
+  }) => {
+    // Save the filter options for later use
+    console.log(filter);
+    setSavedFilter(filter);
+    console.log(savedFilter);
+  };
+
+  //#endregion Filter Functionality
   
   const fetchLocation = async () => {
     let { status } = await Location.requestForegroundPermissionsAsync();
@@ -341,7 +364,7 @@ const Index = () => {
           onClose={closeSearchSheet}
           index={-1}> 
         <BottomSheetView style={{ flex: 1, alignItems: 'center', justifyContent: 'top', backgroundColor: "#F6F6F7A6", opacity: "65%" }}>
-          <MapSearchBar onSearch={handleSearch}></MapSearchBar>
+          <MapSearchBar onSearch={handleSearch} applyOptions={applyFilterOptions}></MapSearchBar>
           {showMarkers()}
         </BottomSheetView>
       </BottomSheet>
