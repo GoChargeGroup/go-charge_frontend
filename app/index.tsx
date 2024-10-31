@@ -27,7 +27,7 @@ const Index = () => {
   const [savedFilter, setSavedFilter] = useState<{
     maxPrice: number;
     maxDistance: number;
-    selectedPlugType: string;
+    selectedPlugTypes: { label: string; value: string; }[];
     powerLevels: { label: string; value: string; checked: boolean }[];
     status: { label: string; value: string; checked: boolean }[];
   } | null>(null);
@@ -117,17 +117,42 @@ const Index = () => {
   //#endregion Search Bar Functionality
 
   //#region Filter Functionality
-  const applyFilterOptions = (filter: {
+  const applyFilterOptions = async (filter: {
     maxPrice: number;
     maxDistance: number;
-    selectedPlugType: string;
+    selectedPlugTypes: { label: string; value: string; }[];
     powerLevels: { label: string; value: string; checked: boolean }[];
     status: { label: string; value: string; checked: boolean }[];
   }) => {
     // Save the filter options for later use
-    console.log(filter);
     setSavedFilter(filter);
-    console.log(savedFilter);
+    try {
+      const stations = getChargingStations({
+        status: filter.status.filter(s => s.checked).map(s => s.value), 
+        power_output: filter.powerLevels.filter(pl => pl.checked).map(pl => pl.value), 
+        plug_type: filter.selectedPlugTypes,
+        max_price: filter.maxPrice,
+        max_radius: filter.maxDistance * 1609.34,
+        max_results: 20,
+        coordinates: location,
+      });
+    } catch (err) {
+      console.error("Error fetching nearby charging stations:", err);
+      Alert.alert("Error", "Error fetching nearby charging stations");
+    }
+  };
+
+  //Get filter params for getChargerStations call
+  const getChargingStationParams = (filter, location) => {
+    return {
+      status: filter.status.filter(s => s.checked).map(s => s.value), 
+      power_output: filter.powerLevels.filter(pl => pl.checked).map(pl => pl.value), 
+      plug_type: filter.selectedPlugTypes,
+      max_price: filter.maxPrice,
+      max_radius: filter.maxDistance * 1609.34,
+      max_results: 20,
+      coordinates: location,
+    };
   };
 
   //#endregion Filter Functionality
@@ -154,12 +179,15 @@ const Index = () => {
     setLoading(true); 
 
     try {
-      const stations = await getChargingStations({
-        coordinates: location,
-        max_radius: 200000,
-        max_results: 20,
-      
-      });
+      const stations = await getChargingStations(savedFilter? 
+        getChargingStationParams(savedFilter, location) : {
+            coordinates: location,
+            max_radius: 200000,
+            max_results: 20,
+          });
+
+      console.log(stations);
+
       if (stations && stations.length > 0) {
         setChargers(stations.map((x: object) => ({
           ...x,
