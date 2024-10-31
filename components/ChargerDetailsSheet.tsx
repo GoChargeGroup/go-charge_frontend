@@ -111,7 +111,7 @@ const PhotosTab = ({ charger, setSelectedCharger }) => {
   const PhotosReviewsTab = ({ charger, setSelectedCharger }) => {
     const [reviews, setReviews] = useState([]);
     const [isFavorite, setIsFavorite] = useState(false); // Track if charger is a favorite
-    const { user,isLoggedIn } = useGlobalContext();
+    const { user,isLoggedIn, setUser } = useGlobalContext();
     const flatListRef = useRef(null);
   
     useEffect(() => {
@@ -149,14 +149,25 @@ const PhotosTab = ({ charger, setSelectedCharger }) => {
     };
   
     const handleFavoriteToggle = async () => {
+   
+    
       try {
         if (isFavorite) {
           await unfavoriteStation(charger.id); 
           Alert.alert('Removed from Favorites');
+          setUser((prevUser) => ({
+            ...prevUser,
+            favorite_station_ids: prevUser.favorite_station_ids.filter(id => id !== charger.id)
+          }));
         } else {
           await favoriteStation(charger.id); 
           Alert.alert('Added to Favorites');
+          setUser((prevUser) => ({
+            ...prevUser,
+            favorite_station_ids: [...prevUser.favorite_station_ids, charger.id]
+          }));
         }
+    
         setIsFavorite(!isFavorite); 
       } catch (error) {
         console.error('Error updating favorite:', error);
