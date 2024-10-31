@@ -157,6 +157,7 @@ const Index = () => {
       }
     } catch (err) {
       console.error("Error fetching nearby charging stations:", err);
+      console.log(err.message)
       Alert.alert("Error", "Error fetching nearby charging stations");
     }
 
@@ -317,12 +318,22 @@ const Index = () => {
               picture={icons.light}
             /> 
               <View className="w-11/12 flex-row justify-between">
-              <TouchableOpacity className="w-full p-6 mr-2 bg-customWhite-200 rounded-2xl  flex-col justify-center items-center" onPress={() => { router.push('/support')/* handle navigation */ }}>
-                <Text className="text-lg font-sfbold">Support</Text>
-                <Text className="text-md text-gray-600 font-sfregular">Help in anytime</Text>
-              </TouchableOpacity>
-              
+                <TouchableOpacity 
+                  className="w-1/2 p-6 mr-2 bg-customWhite-200 rounded-2xl flex-col justify-center items-center" 
+                  onPress={() => { router.push('/support'); }}
+                >
+                  <Text className="text-lg font-sfbold">Support</Text>
+                  <Text className="text-md text-gray-600 font-sfregular">Help in anytime</Text>
+                </TouchableOpacity>
+                
+                <TouchableOpacity 
+                  className="w-1/2 p-6 bg-customWhite-200 rounded-2xl flex-col justify-center items-center" 
+                  onPress={() => { router.push('/favorites'); }}
+                >
+                  <Text className="text-lg font-sfbold">Favorite Stations</Text>
+                </TouchableOpacity>
               </View>
+
               
               {/* {isLoggedIn && user?.role === 3 && (
                 <TouchableOpacity className="w-11/12 p-4 mb-3 bg-green-100 rounded-2xl flex-row justify-center items-center mt-20" onPress={() => router.push('/createCharger')}>
