@@ -25,6 +25,7 @@ const Index = () => {
   const [menuVisible, setMenuVisible] = useState(false); 
   const [searchBarVisible, setSearchBarVisible] = useState(false); 
   const [chargerDetailsVisible, setChargerDetailsVisible] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
   const mapRef = useRef(null);
   const menuSnapPoints = useMemo(() => ['66%'], []);
   const openMenuSheet = () => {
@@ -210,7 +211,7 @@ const Index = () => {
       }, 1000);
     }
   };
-
+  
   const showMarkers = () => {
     return chargers.map((item, index) => (
       <Marker
@@ -328,10 +329,26 @@ const Index = () => {
                 
                 <TouchableOpacity 
                   className="w-1/2 p-6 bg-customWhite-200 rounded-2xl flex-col justify-center items-center" 
-                  onPress={() => { router.push('/favorites'); }}
+                  onPress={() => {
+                    if (!isLoggedIn) {
+                    
+                      router.push('/sign-in');
+                    } else {
+                    
+                      const favoriteChargers = chargers.filter(charger => 
+                        user?.favorite_station_ids.includes(charger.id)
+                      );
+                      router.push({
+                        pathname: '/favorite-stations',
+                        params: { favoriteChargers: JSON.stringify(favoriteChargers) }
+                      });
+                    }
+                  }}
                 >
                   <Text className="text-lg font-sfbold">Favorite Stations</Text>
                 </TouchableOpacity>
+
+
               </View>
 
               

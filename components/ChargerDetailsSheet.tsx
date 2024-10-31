@@ -111,10 +111,15 @@ const PhotosTab = ({ charger, setSelectedCharger }) => {
   const PhotosReviewsTab = ({ charger, setSelectedCharger }) => {
     const [reviews, setReviews] = useState([]);
     const [isFavorite, setIsFavorite] = useState(false); // Track if charger is a favorite
-    const { user } = useGlobalContext();
+    const { user,isLoggedIn } = useGlobalContext();
     const flatListRef = useRef(null);
   
     useEffect(() => {
+
+      const checkIfFavorite = () => {
+        const isFavorite = user?.favorite_station_ids?.includes(charger.id);
+        setIsFavorite(isFavorite);
+      };
       const fetchReviews = async () => {
         try {
           const reviewsData = []; // Dummy reviews data, replace with real data if available
@@ -125,7 +130,8 @@ const PhotosTab = ({ charger, setSelectedCharger }) => {
       };
   
       fetchReviews();
-    }, [charger]);
+      checkIfFavorite();
+    }, [charger, user]);
   
     // Render star rating for reviews
     const renderStars = (rating) => {
@@ -171,11 +177,12 @@ const PhotosTab = ({ charger, setSelectedCharger }) => {
             <Text>No photos available</Text>
           )}
   
+          {isLoggedIn && (
           <TouchableOpacity onPress={handleFavoriteToggle} className="items-center mt-4">
             <Image source={icons.bookmark} className="w-8 h-8" resizeMode="contain" />
-            <Text className="text-lg font-sfbold text-center mt-1">{isFavorite ? 'Favorited' : 'Favorite'}</Text>
+            <Text className="text-lg font-sfbold text-center mt-1">{isFavorite ? 'Unfavorite' : 'Favorite'}</Text>
           </TouchableOpacity>
-  
+           )}
           <View className="mt-6">
             <Text className="text-xl font-bold mb-4">Reviews</Text>
             {reviews.length > 0 ? (
