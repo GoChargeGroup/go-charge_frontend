@@ -15,18 +15,7 @@ const PhotosTab = ({ charger, setSelectedCharger }) => {
     if (!charger) {
       return <Text>Loading...</Text>;
     }
-    const handleStartCharging = () => {
-      const updatedCharger = { ...charger, isWorking: false };
-      setSelectedCharger(updatedCharger);
-
-
-      router.push({
-        pathname: '/charging-session',
-        params: {
-          charger: updatedCharger,
-        },
-      }); 
-    };
+   
     
     return (
       <ScrollView className="flex-1">
@@ -40,10 +29,7 @@ const PhotosTab = ({ charger, setSelectedCharger }) => {
           ) : (
             <Text>No photos available</Text>
           )}
-           <TouchableOpacity onPress={handleStartCharging} className="items-center mt-20">
-            <Image source={icons.charger} className="w-32 h-32" resizeMode="contain" />
-            <Text className="text-lg font-sfbold text-center bottom-8">Charge your car</Text>
-        </TouchableOpacity>
+           
         </View>
       </ScrollView>
     );
@@ -240,7 +226,18 @@ const PhotosTab = ({ charger, setSelectedCharger }) => {
       });
     };
 
-   
+    const handleStartCharging = (setSelectedCharger) => {
+      const updatedCharger = { ...charger, isWorking: false };
+      setSelectedCharger(updatedCharger);
+
+
+      router.push({
+        pathname: '/charging-session',
+        params: {
+          charger: updatedCharger,
+        },
+      }); 
+    };
     return (
       <View className="flex-1 px-4 py-4">
         {chargers.length > 0 ? (
@@ -260,6 +257,10 @@ const PhotosTab = ({ charger, setSelectedCharger }) => {
         ) : (
           <Text>No chargers available.</Text>
         )}
+        <TouchableOpacity onPress={handleStartCharging} className="items-center mt-20">
+            <Image source={icons.charger} className="w-32 h-32" resizeMode="contain" />
+            <Text className="text-lg font-sfbold text-center bottom-8">Charge your car</Text>
+        </TouchableOpacity>
       </View>
     );
   };

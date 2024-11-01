@@ -82,7 +82,9 @@ const Profile = () => {
       Alert.alert('Success', 'Account deleted successfully');
     } catch (error) {
       console.log(error);
+      setModalVisible(false);
       Alert.alert('Error', 'Failed to delete account. Please try again later.');
+      router.replace('/profile');
     }
   };
   const onLogoutPress = async () => {
