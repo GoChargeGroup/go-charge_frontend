@@ -340,6 +340,7 @@ const Index = () => {
       <View className="absolute w-full top-32 pl-3 pr-3 right-1 left-1">
         {closestChargers.list && (
           <QuickSuggest
+            userLocation={location}
             stations={closestChargers.list}
             onClose={() => setClosestChargers({
               ...closestChargers,

@@ -1,8 +1,9 @@
 import React from 'react';
 import { View, Text, Image, TouchableOpacity, Alert } from 'react-native';
 import { icons } from '@/constants';
+import { haversineDistance } from '@/utils/utils';
 
-const QuickSuggest = ({ stations, onClose }) => {
+const QuickSuggest = ({ stations, userLocation, onClose }) => {
   if (!stations) return null;
 
   return (
@@ -28,19 +29,26 @@ const QuickSuggest = ({ stations, onClose }) => {
         GoCharger Quick-Suggest
       </Text>
 
-      {/* Station Details */}
-      {stations.map((station: any) => (
-        <>
-          <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{station.name}</Text>
-          <Text style={{ fontSize: 14, color: '#555' }}>{station.description}</Text>
-          <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 8 }}>
-            <Image source={icons.map} style={{ width: 16, height: 16, marginRight: 4 }} />
-            <Text style={{ color: '#888' }}>{station.address}</Text>
+       {/* Station Details */}
+       {stations.map((station, index) => {
+        const distance = haversineDistance(
+          { latitude: userLocation[1], longitude: userLocation[0] },  // User's location
+          { latitude: station.latitude, longitude: station.longitude }  // Charger location
+        ).toFixed(2);
+
+        return (
+          <View key={index} style={{ marginBottom: 15 }}>
+            <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{station.name}</Text>
+            <Text style={{ fontSize: 14, color: '#555' }}>{station.description}</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 8 }}>
+              <Image source={icons.map} style={{ width: 16, height: 16, marginRight: 4 }} />
+              <Text style={{ color: '#888' }}>{station.address}</Text>
+            </View>
+            
+            <Text style={{ fontSize: 16 }}>Distance: {distance} km</Text>
           </View>
-          
-          <Text style={{ fontSize: 16 }}>Distance: {station.distance.toFixed(2)} km</Text>
-        </>
-      ))}
+        );
+      })}
 
       {/* Directions Button */}
       <TouchableOpacity
