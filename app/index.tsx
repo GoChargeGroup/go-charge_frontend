@@ -22,7 +22,10 @@ const Index = () => {
   const {isLoggedIn, user} = useGlobalContext();
   const [chargers, setChargers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [closestChargers, setClosestChargers] = useState(null); 
+  const [closestChargers, setClosestChargers] = useState({
+    was_shown: false,
+    list: null
+  });
   const [selectedCharger, setSelectedCharger] = useState<Charger | null>(null);
   const [isMarkerPressed, setIsMarkerPressed] = useState(false);
   const [menuVisible, setMenuVisible] = useState(false); 
@@ -225,8 +228,11 @@ const Index = () => {
         }))
         setChargers(new_stations);
 
-        if (!closestChargers) {
-          setClosestChargers(new_stations.slice(0, 3));
+        if (!closestChargers.was_shown) {
+          setClosestChargers({
+            was_shown: true,
+            list: new_stations.slice(0, 3)
+          });
         }
       } else {
         alert("No charging stations found");
@@ -258,28 +264,7 @@ const Index = () => {
     latitudeDelta: 2,
     longitudeDelta: 2.1,
   };
-  const findClosestStation = (userLocation, chargers) => {
-    if (!userLocation || chargers.length === 0) return null;
-  
-    let closest = chargers[0];
-    let minDistance = haversineDistance(
-      { latitude: userLocation[1], longitude: userLocation[0] },
-      { latitude: closest.latitude, longitude: closest.longitude }
-    );
-  
-    chargers.forEach((charger) => {
-      const distance = haversineDistance(
-        { latitude: userLocation[1], longitude: userLocation[0] },
-        { latitude: charger.latitude, longitude: charger.longitude }
-      );
-      if (distance < minDistance) {
-        closest = charger;
-        minDistance = distance;
-      }
-    });
-  
-    return { ...closest, distance: minDistance };
-  };
+
   const onMarkerSelected = (charger) => {
     setIsMarkerPressed(true);
     setSelectedCharger(charger);
@@ -351,10 +336,13 @@ const Index = () => {
         {showMarkers()}
       </MapView>
       <View className="absolute w-full top-32 pl-3 pr-3 right-1 left-1">
-        {closestChargers && (
+        {closestChargers.list && (
           <QuickSuggest
-            stations={closestChargers}
-            onClose={() => setClosestChargers(null)}
+            stations={closestChargers.list}
+            onClose={() => setClosestChargers({
+              ...closestChargers,
+              list: null
+            })}
           />
         )}
       </View>
