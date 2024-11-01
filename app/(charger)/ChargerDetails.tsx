@@ -59,7 +59,7 @@ const ChargerDetails = () => {
             }
           }}
         >
-          {session && session._id == chargerData._id ? 'Start Charging Session' : 'End Charging Session'}
+          {session && session._id === chargerData._id ? 'End Charging Session' : 'Start Charging Session'}
         </Text>
       </TouchableOpacity>
     </ScrollView>
