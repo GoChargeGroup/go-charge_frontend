@@ -30,6 +30,29 @@ const FilterModal = ({ isModalVisible, setModalVisible, applyOptions }) => {
     { label: 'Working', value: 'working', checked: true },
   ]);
 
+  const [lastAppliedOptions, setLastAppliedOptions] = useState({
+    maxPrice: 75,
+    maxDistance: 50,
+    selectedPlugTypes: ['type1', 'type2', 'ccs', 'chademo'],
+    powerLevels: [
+      { label: 'Level 1', value: 'level1', checked: true },
+      { label: 'Level 2', value: 'level2', checked: true },
+      { label: 'Level 3', value: 'level3', checked: true },
+    ],
+    status: [
+      { label: 'Not in Use', value: 'notInUse', checked: true },
+      { label: 'Working', value: 'working', checked: true },
+    ],
+  });
+
+  const resetToLastApplied = () => {
+    setMaxPrice(lastAppliedOptions.maxPrice);
+    setMaxDistance(lastAppliedOptions.maxDistance);
+    setSelectedPlugTypes(lastAppliedOptions.selectedPlugTypes);
+    setPowerLevels(lastAppliedOptions.powerLevels);
+    setStatus(lastAppliedOptions.status);
+  };
+
   const togglePowerLevel = (value) => {
     const updatedLevels = powerLevels.map(level =>
       level.value === value ? { ...level, checked: !level.checked } : level
@@ -58,7 +81,7 @@ const FilterModal = ({ isModalVisible, setModalVisible, applyOptions }) => {
       { label: 'Working', value: 'working', checked: true },
     ]);
 
-    // // Apply the reset options without closing modal
+    // Apply the reset options without closing modal
     applyOptions({ 
         maxPrice: 75, 
         maxDistance: 50, 
@@ -75,6 +98,20 @@ const FilterModal = ({ isModalVisible, setModalVisible, applyOptions }) => {
     });
   }
 
+  const handleApply = () => {
+    const newOptions = {
+      maxPrice,
+      maxDistance,
+      selectedPlugTypes,
+      powerLevels,
+      status,
+    };
+
+    setLastAppliedOptions(newOptions);
+    applyOptions(newOptions);
+    setModalVisible(false);
+  };
+  
   const _renderItem = (item, selected) => {
     return (
       <View 
@@ -124,7 +161,7 @@ const FilterModal = ({ isModalVisible, setModalVisible, applyOptions }) => {
             <Text style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 15 }}>
               Search Options
             </Text>
-            <TouchableOpacity onPress={() => setModalVisible(false)}>
+            <TouchableOpacity onPress={() => {setModalVisible(false); resetToLastApplied();}}>
               <Image source={icons.x} style={{ width: 24, height: 24}} />
             </TouchableOpacity>
           </TouchableOpacity>
@@ -203,7 +240,7 @@ const FilterModal = ({ isModalVisible, setModalVisible, applyOptions }) => {
             <TouchableOpacity onPress={resetOptions}>
               <Text style={{ color: 'red', fontWeight: 'bold', fontSize: 16 }}>Reset Options</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => {applyOptions({ maxPrice, maxDistance, selectedPlugTypes, powerLevels, status }); setModalVisible(false);}}>
+            <TouchableOpacity onPress={handleApply}>
               <Text style={{ color: 'blue', fontWeight: 'bold', fontSize: 16 }}>Apply</Text>
             </TouchableOpacity>
           </View>
