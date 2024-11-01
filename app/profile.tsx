@@ -11,7 +11,7 @@ import { deleteUser, logout, sendDeleteVerification } from '@/lib/authService';
 import { red } from 'react-native-reanimated/lib/typescript/reanimated2/Colors';
 
 const Profile = () => {
-  const { user, setUser, setIsLoggedIn, isLoading } = useGlobalContext();
+  const { user, setUser, setIsLoggedIn, isLoading, session } = useGlobalContext();
   const [carChargingNotifications, setCarChargingNotifications] = useState(true);
   const [promotionsNotifications, setPromotionsNotifications] = useState(true);
   const navigation = useNavigation();
@@ -88,6 +88,11 @@ const Profile = () => {
     }
   };
   const onLogoutPress = async () => {
+    if (session) {
+      Alert.alert("You can only log out once you end your current session.");
+      return;
+    }
+
     try {
       await logout();
       setUser(null);

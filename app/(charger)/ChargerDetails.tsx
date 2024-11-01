@@ -2,10 +2,13 @@ import React from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Image } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { icons } from '@/constants';
+import { useGlobalContext } from '@/context/GlobalProvider';
 
 const ChargerDetails = () => {
   const { charger } = useLocalSearchParams();
   const chargerData = JSON.parse(charger); 
+
+  const { session, setSession } = useGlobalContext();
 
   return (
     <ScrollView className="flex-1 px-4 py-4">
@@ -45,7 +48,19 @@ const ChargerDetails = () => {
         }}
       >
         <Image source={icons.light} style={{ width: 24, height: 24, marginRight: 8 }} />
-        <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 16 }}>Start Charging Session</Text>
+        
+        <Text
+          style={{ color: '#fff', fontWeight: 'bold', fontSize: 16 }}
+          onPress={() => {
+            if (session) {
+              setSession(null)
+            } else {
+              setSession(chargerData)
+            }
+          }}
+        >
+          {session && session._id == chargerData._id ? 'Start Charging Session' : 'End Charging Session'}
+        </Text>
       </TouchableOpacity>
     </ScrollView>
   );

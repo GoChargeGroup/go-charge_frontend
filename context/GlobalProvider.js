@@ -8,6 +8,7 @@ export const GlobalProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [session, setSession] = useState(null);
 
   const fetchUser = async () => {
     try {
@@ -40,6 +41,8 @@ export const GlobalProvider = ({ children }) => {
         setUser,
         isLoading,
         fetchUser,
+        session,
+        setSession
       }}
     >
       {children}
