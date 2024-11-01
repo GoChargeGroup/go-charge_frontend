@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, Image, FlatList, KeyboardAvoidingView, Platform, TouchableOpacity } from 'react-native';
+import { View, Text, Image, FlatList, KeyboardAvoidingView, Platform, TouchableOpacity, Alert } from 'react-native';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import ChargerItem from "@/components/ChargerItem";
 import * as Location from 'expo-location';
@@ -9,7 +9,8 @@ import CustomButton from './CustomButton';
 import ReviewForm from '@/app/(charger)/reviewForm';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScrollView } from 'react-native-gesture-handler';
-import { router } from 'expo-router';
+import { router, useNavigation, useRouter } from 'expo-router';
+import { favoriteStation, unfavoriteStation } from '@/lib/authService';
 const PhotosTab = ({ charger, setSelectedCharger }) => {
     if (!charger) {
       return <Text>Loading...</Text>;
@@ -109,14 +110,19 @@ const PhotosTab = ({ charger, setSelectedCharger }) => {
   
   const PhotosReviewsTab = ({ charger, setSelectedCharger }) => {
     const [reviews, setReviews] = useState([]);
-    const { user } = useGlobalContext();
+    const [isFavorite, setIsFavorite] = useState(false); // Track if charger is a favorite
+    const { user,isLoggedIn, setUser } = useGlobalContext();
     const flatListRef = useRef(null);
   
     useEffect(() => {
+
+      const checkIfFavorite = () => {
+        const isFavorite = user?.favorite_station_ids?.includes(charger.id);
+        setIsFavorite(isFavorite);
+      };
       const fetchReviews = async () => {
         try {
-          // Replace with actual logic to fetch reviews for the charger
-          const reviewsData = []; // Dummy reviews data
+          const reviewsData = []; // Dummy reviews data, replace with real data if available
           setReviews(reviewsData);
         } catch (error) {
           console.error('Error fetching reviews:', error);
@@ -124,8 +130,10 @@ const PhotosTab = ({ charger, setSelectedCharger }) => {
       };
   
       fetchReviews();
-    }, [charger]);
+      checkIfFavorite();
+    }, [charger, user]);
   
+    // Render star rating for reviews
     const renderStars = (rating) => {
       const stars = [];
       for (let i = 0; i < 5; i++) {
@@ -140,22 +148,36 @@ const PhotosTab = ({ charger, setSelectedCharger }) => {
       return stars;
     };
   
-    const handleStartCharging = () => {
-      const updatedCharger = { ...charger, isWorking: false };
-      setSelectedCharger(updatedCharger);
-  
-      router.push({
-        pathname: '/charging-session',
-        params: {
-          charger: updatedCharger,
-        },
-      });
+    const handleFavoriteToggle = async () => {
+   
+    
+      try {
+        if (isFavorite) {
+          await unfavoriteStation(charger.id); 
+          Alert.alert('Removed from Favorites');
+          setUser((prevUser) => ({
+            ...prevUser,
+            favorite_station_ids: prevUser.favorite_station_ids.filter(id => id !== charger.id)
+          }));
+        } else {
+          await favoriteStation(charger.id); 
+          Alert.alert('Added to Favorites');
+          setUser((prevUser) => ({
+            ...prevUser,
+            favorite_station_ids: [...prevUser.favorite_station_ids, charger.id]
+          }));
+        }
+    
+        setIsFavorite(!isFavorite); 
+      } catch (error) {
+        console.error('Error updating favorite:', error);
+        Alert.alert('Error', 'Could not update favorite status.');
+      }
     };
   
     return (
       <SafeAreaView style={{ flex: 1 }}>
         <ScrollView className="flex-1 px-4 py-4">
-          {/* Photos Section */}
           {charger.pictures && charger.pictures.length > 0 ? (
             <View>
               {charger.pictures.map((picture, index) => (
@@ -166,13 +188,12 @@ const PhotosTab = ({ charger, setSelectedCharger }) => {
             <Text>No photos available</Text>
           )}
   
-          {/* Start Charging Button */}
-          <TouchableOpacity onPress={handleStartCharging} className="items-center mt-20">
-            <Image source={icons.charger} className="w-32 h-32" resizeMode="contain" />
-            <Text className="text-lg font-sfbold text-center bottom-8">Charge your car</Text>
+          {isLoggedIn && (
+          <TouchableOpacity onPress={handleFavoriteToggle} className="items-center mt-4">
+            <Image source={icons.bookmark} className="w-8 h-8" resizeMode="contain" />
+            <Text className="text-lg font-sfbold text-center mt-1">{isFavorite ? 'Unfavorite' : 'Favorite'}</Text>
           </TouchableOpacity>
-  
-          {/* Reviews Section */}
+           )}
           <View className="mt-6">
             <Text className="text-xl font-bold mb-4">Reviews</Text>
             {reviews.length > 0 ? (
@@ -195,7 +216,6 @@ const PhotosTab = ({ charger, setSelectedCharger }) => {
               <Text>No reviews yet.</Text>
             )}
   
-            {/* Review Form */}
             <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} keyboardVerticalOffset={250}>
               <ReviewForm charger={charger} />
             </KeyboardAvoidingView>
@@ -207,18 +227,33 @@ const PhotosTab = ({ charger, setSelectedCharger }) => {
 
   const ChargersListTab = ({ charger }) => {
     const chargers = charger.chargers || []; // Assuming 'charger.chargers' contains the list
-  
+    const navigation = useNavigation();
+    const router = useRouter();
+    
+    const handleChargerPress = (selectedCharger) => {
+      console.log(selectedCharger)
+      router.push({
+        pathname: '/ChargerDetails',
+        params: {
+          charger: JSON.stringify(selectedCharger), // Convert charger object to string
+        },
+      });
+    };
+
+   
     return (
       <View className="flex-1 px-4 py-4">
         {chargers.length > 0 ? (
           <FlatList
             data={chargers}
             renderItem={({ item }) => (
-              <View className="bg-white rounded-lg p-4 mb-4">
-                <Text className="text-lg font-bold">{item.name}</Text>
-                <Text className="text-base">{item.description}</Text>
-                {/* Display other charger details as needed */}
-              </View>
+              <TouchableOpacity onPress={() => handleChargerPress(item)}>
+                <View className="bg-white rounded-lg p-4 mb-4">
+                  <Text className="text-lg font-bold">{item.name}</Text>
+                  <Text className="text-base">{item.description}</Text>
+                 
+                </View>
+              </TouchableOpacity>
             )}
             keyExtractor={(item) => item.id?.toString() || Math.random().toString()}
           />
