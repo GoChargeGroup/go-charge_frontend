@@ -127,7 +127,7 @@ const Index = () => {
     // Save the filter options for later use
     setSavedFilter(filter);
     try {
-      const stations = getChargingStations({
+      const stations = await getChargingStations({
         status: filter.status.filter(s => s.checked).map(s => s.value), 
         power_output: filter.powerLevels.filter(pl => pl.checked).map(pl => pl.value), 
         plug_type: filter.selectedPlugTypes,
@@ -136,6 +136,25 @@ const Index = () => {
         max_results: 20,
         coordinates: location,
       });
+
+      if (stations && stations.length > 0) {
+        setChargers(stations.map((x: object) => ({
+          ...x,
+          id: x._id,
+          pictures: x.picture_urls,
+          latitude: x.coordinates[1],
+          longitude: x.coordinates[0],
+          isWorking: x.status,
+          working_hours: "24/7",
+          price: x.price,
+          contact: "Daddy Mitch",
+          amount: 1,
+        })));
+        
+      } else {
+        alert("No charging stations found");
+        setChargers([]);
+      }
     } catch (err) {
       console.error("Error fetching nearby charging stations:", err);
       Alert.alert("Error", "Error fetching nearby charging stations");
@@ -195,9 +214,9 @@ const Index = () => {
           pictures: x.picture_urls,
           latitude: x.coordinates[1],
           longitude: x.coordinates[0],
-          isWorking: true,
+          isWorking: x.status,
           working_hours: "24/7",
-          price: 20,
+          price: x.price,
           contact: "Daddy Mitch",
           amount: 1,
         })));

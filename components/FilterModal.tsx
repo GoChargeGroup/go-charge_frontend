@@ -132,7 +132,7 @@ const FilterModal = ({ isModalVisible, setModalVisible, applyOptions }) => {
           {/* Maximum Price Slider */}
           <Text style={{ fontWeight: 'bold', marginTop: 10 }}>Maximum Price: {maxPrice}¢ per kWh</Text>
             <Slider
-            minimumValue={0}
+            minimumValue={1}
             maximumValue={100} // Maximum of 100 cents (or $1.00) per kWh
             step={1}
             value={maxPrice}
@@ -143,7 +143,7 @@ const FilterModal = ({ isModalVisible, setModalVisible, applyOptions }) => {
           <Text style={{ fontWeight: 'bold', marginTop: 10 }}>Maximum Distance: {maxDistance} miles</Text>
           <Slider
             minimumValue={1}
-            maximumValue={100}
+            maximumValue={150}
             step={1}
             value={maxDistance}
             onValueChange={value => setMaxDistance(value)}
