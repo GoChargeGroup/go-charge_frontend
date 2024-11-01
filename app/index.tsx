@@ -27,6 +27,8 @@ const Index = () => {
   const [isMarkerPressed, setIsMarkerPressed] = useState(false);
   const [menuVisible, setMenuVisible] = useState(false); 
   const [searchBarVisible, setSearchBarVisible] = useState(false); 
+  const [hasShownQuickSuggest, setHasShownQuickSuggest] = useState(false);
+  const [showQuickSuggest, setShowQuickSuggest] = useState(false);
   const [savedFilter, setSavedFilter] = useState<{
     maxPrice: number;
     maxDistance: number;
@@ -247,41 +249,43 @@ const Index = () => {
   useEffect(() => {
     fetchLocation(); 
   }, []);
-  useEffect(() => {
-    if (location && chargers.length > 0) {
-      const closest = findClosestStation(location, chargers);
-      setClosestCharger(closest);
-    }
-  }, [chargers, location]);
-
+ 
   const initialRegion = {
     latitude: 40.42217359146111,
     longitude: -86.93082888528933,
     latitudeDelta: 2,
     longitudeDelta: 2.1,
   };
-  const findClosestStation = (userLocation, chargers) => {
-    if (!userLocation || chargers.length === 0) return null;
-  
-    let closest = chargers[0];
-    let minDistance = haversineDistance(
-      { latitude: userLocation[1], longitude: userLocation[0] },
-      { latitude: closest.latitude, longitude: closest.longitude }
-    );
-  
-    chargers.forEach((charger) => {
+  const findClosestStation = () => {
+    if (!location || chargers.length === 0 || hasShownQuickSuggest) return;
+
+    let closestStation = null;
+    let minDistance = Infinity;
+
+    chargers.forEach((station) => {
       const distance = haversineDistance(
-        { latitude: userLocation[1], longitude: userLocation[0] },
-        { latitude: charger.latitude, longitude: charger.longitude }
+        { latitude: location[1], longitude: location[0] },
+        { latitude: station.latitude, longitude: station.longitude }
       );
       if (distance < minDistance) {
-        closest = charger;
         minDistance = distance;
+        closestStation = { ...station, distance };
       }
     });
-  
-    return { ...closest, distance: minDistance };
+
+    setClosestCharger(closestStation);
+    setShowQuickSuggest(true); 
+    setHasShownQuickSuggest(true);
   };
+  const handleQuickSuggestClose = () => {
+    setShowQuickSuggest(false); 
+  };
+  useEffect(() => {
+    if (location && chargers.length > 0) {
+      findClosestStation(location, chargers);
+    }
+  }, [chargers, location]);
+
   const onMarkerSelected = (charger) => {
     setIsMarkerPressed(true);
     setSelectedCharger(charger);
@@ -353,10 +357,10 @@ const Index = () => {
         {showMarkers()}
       </MapView>
       <View className="absolute w-full top-32 pl-3 pr-3 right-1 left-1">
-      {closestCharger && (
+      {showQuickSuggest && closestCharger && (
           <QuickSuggest
             station={closestCharger}
-            onClose={() => setClosestCharger(null)}
+            onClose={handleQuickSuggestClose}
           />
         )}
       </View>

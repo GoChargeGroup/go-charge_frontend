@@ -20,17 +20,14 @@ const QuickSuggest = ({ station, onClose }) => {
       shadowRadius: 4,
       elevation: 5,
     }}>
-      {/* Close Button */}
       <TouchableOpacity onPress={onClose} style={{ position: 'absolute', top: 10, right: 10 }}>
         <Image source={icons.x} style={{ width: 25, height: 25 }} />
       </TouchableOpacity>
 
-      {/* Title */}
       <Text style={{ fontSize: 20, fontWeight: 'bold', textAlign: 'center', marginBottom: 10 }}>
         GoCharger Quick-Suggest
       </Text>
 
-      {/* Station Details */}
       <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{station.name}</Text>
       <Text style={{ fontSize: 14, color: '#555' }}>{station.description}</Text>
       <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 8 }}>
@@ -40,7 +37,6 @@ const QuickSuggest = ({ station, onClose }) => {
       
       <Text style={{ fontSize: 16 }}>Distance: {station.distance.toFixed(2)} km</Text>
       
-      {/* Directions Button */}
       <TouchableOpacity
         onPress={() => Alert.alert("Feature Coming Soon", "Directions feature is under development")}
         style={{
