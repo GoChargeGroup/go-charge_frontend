@@ -24,6 +24,13 @@ const Index = () => {
   const [isMarkerPressed, setIsMarkerPressed] = useState(false);
   const [menuVisible, setMenuVisible] = useState(false); 
   const [searchBarVisible, setSearchBarVisible] = useState(false); 
+  const [savedFilter, setSavedFilter] = useState<{
+    maxPrice: number;
+    maxDistance: number;
+    selectedPlugTypes: { label: string; value: string; }[];
+    powerLevels: { label: string; value: string; checked: boolean }[];
+    status: { label: string; value: string; checked: boolean }[];
+  } | null>(null);
   const [chargerDetailsVisible, setChargerDetailsVisible] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
   const mapRef = useRef(null);
@@ -109,6 +116,66 @@ const Index = () => {
   }; 
   
   //#endregion Search Bar Functionality
+
+  //#region Filter Functionality
+  const applyFilterOptions = async (filter: {
+    maxPrice: number;
+    maxDistance: number;
+    selectedPlugTypes: { label: string; value: string; }[];
+    powerLevels: { label: string; value: string; checked: boolean }[];
+    status: { label: string; value: string; checked: boolean }[];
+  }) => {
+    // Save the filter options for later use
+    setSavedFilter(filter);
+    try {
+      const stations = await getChargingStations({
+        status: filter.status.filter(s => s.checked).map(s => s.value), 
+        power_output: filter.powerLevels.filter(pl => pl.checked).map(pl => pl.value), 
+        plug_type: filter.selectedPlugTypes,
+        max_price: filter.maxPrice,
+        max_radius: filter.maxDistance * 1609.34,
+        max_results: 20,
+        coordinates: location,
+      });
+
+      if (stations && stations.length > 0) {
+        setChargers(stations.map((x: object) => ({
+          ...x,
+          id: x._id,
+          pictures: x.picture_urls,
+          latitude: x.coordinates[1],
+          longitude: x.coordinates[0],
+          isWorking: x.status,
+          working_hours: "24/7",
+          price: x.price,
+          contact: "Daddy Mitch",
+          amount: 1,
+        })));
+        
+      } else {
+        alert("No charging stations found");
+        setChargers([]);
+      }
+    } catch (err) {
+      console.error("Error fetching nearby charging stations:", err);
+      Alert.alert("Error", "Error fetching nearby charging stations");
+    }
+  };
+
+  //Get filter params for getChargerStations call
+  const getChargingStationParams = (filter, location) => {
+    return {
+      status: filter.status.filter(s => s.checked).map(s => s.value), 
+      power_output: filter.powerLevels.filter(pl => pl.checked).map(pl => pl.value), 
+      plug_type: filter.selectedPlugTypes,
+      max_price: filter.maxPrice,
+      max_radius: filter.maxDistance * 1609.34,
+      max_results: 20,
+      coordinates: location,
+    };
+  };
+
+  //#endregion Filter Functionality
   
   const fetchLocation = async () => {
     let { status } = await Location.requestForegroundPermissionsAsync();
@@ -132,12 +199,15 @@ const Index = () => {
     setLoading(true); 
 
     try {
-      const stations = await getChargingStations({
-        coordinates: location,
-        max_radius: 200000,
-        max_results: 20,
-      
-      });
+      const stations = await getChargingStations(savedFilter? 
+        getChargingStationParams(savedFilter, location) : {
+            coordinates: location,
+            max_radius: 200000,
+            max_results: 20,
+          });
+
+      console.log(stations);
+
       if (stations && stations.length > 0) {
         setChargers(stations.map((x: object) => ({
           ...x,
@@ -145,9 +215,9 @@ const Index = () => {
           pictures: x.picture_urls,
           latitude: x.coordinates[1],
           longitude: x.coordinates[0],
-          isWorking: true,
+          isWorking: x.status,
           working_hours: "24/7",
-          price: 20,
+          price: x.price,
           contact: "Daddy Mitch",
           amount: 1,
         })));
@@ -369,7 +439,7 @@ const Index = () => {
           onClose={closeSearchSheet}
           index={-1}> 
         <BottomSheetView style={{ flex: 1, alignItems: 'center', justifyContent: 'top', backgroundColor: "#F6F6F7A6", opacity: "65%" }}>
-          <MapSearchBar onSearch={handleSearch}></MapSearchBar>
+          <MapSearchBar onSearch={handleSearch} applyOptions={applyFilterOptions}></MapSearchBar>
           {showMarkers()}
         </BottomSheetView>
       </BottomSheet>
