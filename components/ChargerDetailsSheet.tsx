@@ -257,10 +257,10 @@ const PhotosTab = ({ charger, setSelectedCharger }) => {
         ) : (
           <Text>No chargers available.</Text>
         )}
-        <TouchableOpacity onPress={handleStartCharging} className="items-center mt-20">
+        {/* <TouchableOpacity onPress={handleStartCharging} className="items-center mt-20">
             <Image source={icons.charger} className="w-32 h-32" resizeMode="contain" />
             <Text className="text-lg font-sfbold text-center bottom-8">Charge your car</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
     );
   };

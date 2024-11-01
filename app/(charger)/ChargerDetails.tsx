@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, Text, ScrollView } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Image } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
+import { icons } from '@/constants';
 
 const ChargerDetails = () => {
   const { charger } = useLocalSearchParams();
@@ -30,6 +31,22 @@ const ChargerDetails = () => {
           <Text style={{ fontWeight: 'bold' }}>Total Payments: </Text>${chargerData.total_payments}
         </Text>
       </View>
+
+      <TouchableOpacity
+       //onPress={handleStartCharging}
+        style={{
+          backgroundColor: '#007bff',
+          padding: 12,
+          borderRadius: 8,
+          alignItems: 'center',
+          flexDirection: 'row',
+          justifyContent: 'center',
+          marginTop: 16,
+        }}
+      >
+        <Image source={icons.light} style={{ width: 24, height: 24, marginRight: 8 }} />
+        <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 16 }}>Start Charging Session</Text>
+      </TouchableOpacity>
     </ScrollView>
   );
 };
