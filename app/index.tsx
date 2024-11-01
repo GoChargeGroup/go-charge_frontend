@@ -22,7 +22,7 @@ const Index = () => {
   const {isLoggedIn, user} = useGlobalContext();
   const [chargers, setChargers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [closestCharger, setClosestCharger] = useState(null); 
+  const [closestChargers, setClosestChargers] = useState(null); 
   const [selectedCharger, setSelectedCharger] = useState<Charger | null>(null);
   const [isMarkerPressed, setIsMarkerPressed] = useState(false);
   const [menuVisible, setMenuVisible] = useState(false); 
@@ -211,7 +211,7 @@ const Index = () => {
 
       
       if (stations && stations.length > 0) {
-        setChargers(stations.map((x: object) => ({
+        const new_stations = stations.map((x: object) => ({
           ...x,
           id: x._id,
           pictures: x.picture_urls,
@@ -222,8 +222,12 @@ const Index = () => {
           price: x.price,
           contact: "Daddy Mitch",
           amount: 1,
-        })));
-        
+        }))
+        setChargers(new_stations);
+
+        if (!closestChargers) {
+          setClosestChargers(new_stations.slice(0, 3));
+        }
       } else {
         alert("No charging stations found");
         setChargers([]);
@@ -247,12 +251,6 @@ const Index = () => {
   useEffect(() => {
     fetchLocation(); 
   }, []);
-  useEffect(() => {
-    if (location && chargers.length > 0) {
-      const closest = findClosestStation(location, chargers);
-      setClosestCharger(closest);
-    }
-  }, [chargers, location]);
 
   const initialRegion = {
     latitude: 40.42217359146111,
@@ -353,10 +351,10 @@ const Index = () => {
         {showMarkers()}
       </MapView>
       <View className="absolute w-full top-32 pl-3 pr-3 right-1 left-1">
-      {closestCharger && (
+        {closestChargers && (
           <QuickSuggest
-            station={closestCharger}
-            onClose={() => setClosestCharger(null)}
+            stations={closestChargers}
+            onClose={() => setClosestChargers(null)}
           />
         )}
       </View>

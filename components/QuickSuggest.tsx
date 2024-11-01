@@ -2,8 +2,8 @@ import React from 'react';
 import { View, Text, Image, TouchableOpacity, Alert } from 'react-native';
 import { icons } from '@/constants';
 
-const QuickSuggest = ({ station, onClose }) => {
-  if (!station) return null;
+const QuickSuggest = ({ stations, onClose }) => {
+  if (!stations) return null;
 
   return (
     <View style={{
@@ -31,15 +31,19 @@ const QuickSuggest = ({ station, onClose }) => {
       </Text>
 
       {/* Station Details */}
-      <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{station.name}</Text>
-      <Text style={{ fontSize: 14, color: '#555' }}>{station.description}</Text>
-      <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 8 }}>
-        <Image source={icons.map} style={{ width: 16, height: 16, marginRight: 4 }} />
-        <Text style={{ color: '#888' }}>{station.address}</Text>
-      </View>
-      
-      <Text style={{ fontSize: 16 }}>Distance: {station.distance.toFixed(2)} km</Text>
-      
+      {stations.map((station: any) => (
+        <>
+          <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{station.name}</Text>
+          <Text style={{ fontSize: 14, color: '#555' }}>{station.description}</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 8 }}>
+            <Image source={icons.map} style={{ width: 16, height: 16, marginRight: 4 }} />
+            <Text style={{ color: '#888' }}>{station.address}</Text>
+          </View>
+          
+          <Text style={{ fontSize: 16 }}>Distance: {station.distance.toFixed(2)} km</Text>
+        </>
+      ))}
+
       {/* Directions Button */}
       <TouchableOpacity
         onPress={() => Alert.alert("Feature Coming Soon", "Directions feature is under development")}
