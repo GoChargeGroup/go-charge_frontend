@@ -383,7 +383,7 @@ const Index = () => {
             onClose={closeMenuSheet}
             index={-1}
           >
-        <BottomSheetView  style={{ flex: 1, alignItems: 'center', justifyContent: 'top', backgroundColor: "#F6F6F7A6", opacity: "65%" }}>
+        <BottomSheetView  style={{ flex: 1, alignItems: 'center', justifyContent: 'top', backgroundColor: "#F6F6F7A6", opacity: "65" }}>
               
               <View className="w-full flex-row justify-between items-center px-4 mb-4">
                 <Text className="flex-1 text-center font-sfbold text-2xl">Menu</Text>
@@ -465,7 +465,7 @@ const Index = () => {
           enablePanDownToClose={true}
           onClose={closeSearchSheet}
           index={-1}> 
-        <BottomSheetView style={{ flex: 1, alignItems: 'center', justifyContent: 'top', backgroundColor: "#F6F6F7A6", opacity: "65%" }}>
+        <BottomSheetView style={{ flex: 1, alignItems: 'center', justifyContent: 'top', backgroundColor: "#F6F6F7A6", opacity: "65" }}>
           <MapSearchBar onSearch={handleSearch} applyOptions={applyFilterOptions}></MapSearchBar>
           {showMarkers()}
         </BottomSheetView>
