@@ -10,7 +10,7 @@ const CustomButton = ({title, handlePress, containerStyles, textStyles, isLoadin
     ${isLoading ? 'opacity-50' : ''}`}
     disabled={isLoading} 
     >
-         <Image source={picture} className="w-4 h-5 mr-2" />
+        {picture && <Image source={picture} className="w-4 h-5 mr-2" />}
         <Text className={`text-lg text-green-200 font-sfbold ${textStyles}`}>
             {title}
         </Text>

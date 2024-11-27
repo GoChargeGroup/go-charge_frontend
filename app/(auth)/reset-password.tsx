@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, SafeAreaView, ScrollView, Alert } from 'react-native';
+import { OtpInput } from "react-native-otp-entry";
 import { Link, router } from 'expo-router';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import FormField from '@/components/FormField';
@@ -68,13 +69,18 @@ const ResetPassword = () => {
                 {isEmailSent && (
                     <>
                     <Text className="text-4xl text-center text-black font-sfregular mb-2 pt-10">Please enter your new password.</Text>
-                    <FormField
-                        placeholder="Confirmation Code"
-                        value={otp}
-                        onChangeText={setOtp}
-                        otherStyles="w-11/12"
-                        formStyles="border-2 border-gray-600 rounded-xl"
-                        keyboardType="numeric"
+                    <Text className="text-lg text-center text-black font-sfregular mt-2">Check your email to recieve a one time verification code.</Text>
+                    <OtpInput
+                      numberOfDigits={5}
+                      onTextChange={(otp) => {setOtp(otp)}}
+                      theme={{
+                        containerStyle: {
+                          flexDirection: 'row',
+                          width: '90%',
+                          marginTop: '10'
+                        },
+                        pinCodeContainerStyle: {backgroundColor: '#FFFFFF'},
+                      }}
                     />
                     <FormField
                         title="Password"
@@ -92,10 +98,10 @@ const ResetPassword = () => {
                         otherStyles="w-11/12 mb-2"
                         formStyles="border-2 border-gray-600 rounded-xl"
                     />
-                    <CustomButton title="Reset Password" handlePress={submitPasswordReset} containerStyles={undefined} textStyles={undefined} isLoading={undefined} picture={undefined} />
-                    <View style={{flexDirection: "row"}}>
-                        <CustomButton title="Back" handlePress={() => setIsEmailSent(false)} />
-                        <CustomButton title="Resend Email" handlePress={sendResetEmail} />
+                    <CustomButton title="Reset Password" handlePress={submitPasswordReset} containerStyles={'mt-2'} textStyles={undefined} isLoading={undefined} picture={undefined} />
+                    <View style={{flexDirection: "row", justifyContent: "space-between", maxWidth: '90%'}}>
+                        <CustomButton title="Back" handlePress={() => setIsEmailSent(false)} containerStyles={'w-1/2 mr-1'}/>
+                        <CustomButton title="Resend Email" handlePress={sendResetEmail} containerStyles={'w-1/2'}/>
                     </View>
                     </>
                 )}
@@ -105,5 +111,6 @@ const ResetPassword = () => {
     </GestureHandlerRootView>
   );
 };
+
 
 export default ResetPassword;

@@ -1,5 +1,6 @@
 import { View, Text, TouchableOpacity, Image, Switch, ScrollView, Alert, Modal, TextInput } from 'react-native';
 import React, { useEffect, useState } from 'react';
+import { OtpInput } from "react-native-otp-entry";
 import { useGlobalContext } from '@/context/GlobalProvider';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router, useNavigation } from 'expo-router';
@@ -239,24 +240,12 @@ const Profile = () => {
             <Text style={{ color: 'red', fontSize: 16, fontWeight: 'bold', textAlign: 'center', marginBottom: 6 }}>
               This action cannot be undone.
             </Text>
-            <Text style={{ fontSize: 16, textAlign: 'center', marginBottom: 16 }}>
+            <Text style={{ fontSize: 16, textAlign: 'center', marginBottom: 10 }}>
               If you would like to continue, check your email for a verification code.
             </Text>
-            <TextInput
-              style={{
-                width: '100%',
-                padding: 10,
-                borderWidth: 1,
-                borderColor: '#ccc',
-                borderRadius: 5,
-                marginBottom: 10,
-                textAlign: 'center',
-              }}
-              placeholder="Enter verification code"
-              placeholderTextColor="#888"
-              keyboardType="numeric"
-              value={otp}
-              onChangeText={setOTP}
+            <OtpInput
+              numberOfDigits={5}
+              onTextChange={(otp) => {setOTP(otp)}}
             />
             <View
               style={{
@@ -269,6 +258,7 @@ const Profile = () => {
                 style={{
                   flex: 1,
                   marginRight: 10,
+                  marginTop: 10,
                   backgroundColor: '#ccc',
                   padding: 10,
                   borderRadius: 5,
@@ -282,6 +272,7 @@ const Profile = () => {
                 style={{
                   flex: 1,
                   marginLeft: 10,
+                  marginTop: 10,
                   backgroundColor: 'red',
                   padding: 10,
                   borderRadius: 5,
