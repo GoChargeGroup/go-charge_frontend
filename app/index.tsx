@@ -35,6 +35,7 @@ const Index = () => {
   const [savedFilter, setSavedFilter] = useState<{
     maxPrice: number;
     maxDistance: number;
+    minRating: number;
     selectedPlugTypes: { label: string; value: string; }[];
     powerLevels: { label: string; value: string; checked: boolean }[];
     status: { label: string; value: string; checked: boolean }[];
@@ -129,6 +130,7 @@ const Index = () => {
   const applyFilterOptions = async (filter: {
     maxPrice: number;
     maxDistance: number;
+    minRating: number;
     selectedPlugTypes: { label: string; value: string; }[];
     powerLevels: { label: string; value: string; checked: boolean }[];
     status: { label: string; value: string; checked: boolean }[];
@@ -142,6 +144,7 @@ const Index = () => {
         plug_type: filter.selectedPlugTypes,
         max_price: filter.maxPrice,
         max_radius: filter.maxDistance * 1609.34,
+        min_rating: filter.minRating,
         max_results: 20,
         coordinates: location,
       });
@@ -178,6 +181,7 @@ const Index = () => {
       plug_type: filter.selectedPlugTypes,
       max_price: filter.maxPrice,
       max_radius: filter.maxDistance * 1609.34,
+      min_rating: filter.minRating,
       max_results: 20,
       coordinates: location,
     };

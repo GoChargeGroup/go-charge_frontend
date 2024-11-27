@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Modal, Image, View, Text, TouchableOpacity } from 'react-native';
+import { Rating } from 'react-native-ratings';
 import Slider from '@react-native-community/slider';
 import { MultiSelect } from 'react-native-element-dropdown';
 import { Checkbox } from 'expo-checkbox';
@@ -8,6 +9,7 @@ import { icons } from '@/constants';
 const FilterModal = ({ isModalVisible, setModalVisible, applyOptions }) => {
   const [maxPrice, setMaxPrice] = useState(75);
   const [maxDistance, setMaxDistance] = useState(50);
+  const [minRating, setMinRating] = useState(2.5);
   const [selectedPlugTypes, setSelectedPlugTypes] = useState(['type1', 'type2', 'ccs', 'chademo']);
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
@@ -33,6 +35,7 @@ const FilterModal = ({ isModalVisible, setModalVisible, applyOptions }) => {
   const [lastAppliedOptions, setLastAppliedOptions] = useState({
     maxPrice: 75,
     maxDistance: 50,
+    minRating: 2.5,
     selectedPlugTypes: ['type1', 'type2', 'ccs', 'chademo'],
     powerLevels: [
       { label: 'Level 1', value: 'level1', checked: true },
@@ -48,6 +51,7 @@ const FilterModal = ({ isModalVisible, setModalVisible, applyOptions }) => {
   const resetToLastApplied = () => {
     setMaxPrice(lastAppliedOptions.maxPrice);
     setMaxDistance(lastAppliedOptions.maxDistance);
+    setMinRating(lastAppliedOptions.minRating);
     setSelectedPlugTypes(lastAppliedOptions.selectedPlugTypes);
     setPowerLevels(lastAppliedOptions.powerLevels);
     setStatus(lastAppliedOptions.status);
@@ -70,6 +74,7 @@ const FilterModal = ({ isModalVisible, setModalVisible, applyOptions }) => {
   const resetOptions = () => {
     setMaxPrice(75);
     setMaxDistance(50);
+    setMinRating(2.5);
     setSelectedPlugTypes(['type1', 'type2', 'ccs', 'chademo']);
     setPowerLevels([
       { label: 'Level 1', value: 'level1', checked: true },
@@ -85,6 +90,7 @@ const FilterModal = ({ isModalVisible, setModalVisible, applyOptions }) => {
     applyOptions({ 
         maxPrice: 75, 
         maxDistance: 50, 
+        minRating: 2.5,
         selectedPlugTypes: ['type1', 'type2', 'ccs', 'chademo'], 
         powerLevels: [
           { label: 'Level 1', value: 'level1', checked: true },
@@ -102,6 +108,7 @@ const FilterModal = ({ isModalVisible, setModalVisible, applyOptions }) => {
     const newOptions = {
       maxPrice,
       maxDistance,
+      minRating,
       selectedPlugTypes,
       powerLevels,
       status,
@@ -184,6 +191,13 @@ const FilterModal = ({ isModalVisible, setModalVisible, applyOptions }) => {
             step={1}
             value={maxDistance}
             onValueChange={value => setMaxDistance(value)}
+          />
+
+          {/* Minimum Ratings */}
+          <Text style={{ fontWeight: 'bold', marginTop: 10, marginBottom: 5 }}>Minimum Rating: {minRating} stars</Text>
+          <Rating
+            fractions={1}
+            onFinishRating={(rating: any) => setMinRating(rating)}
           />
 
           {/* EV Charger Plug Types */}
