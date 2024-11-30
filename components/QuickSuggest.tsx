@@ -21,7 +21,7 @@ const QuickSuggest = ({ stations, userLocation, onClose }) => {
       shadowRadius: 4,
       elevation: 5,
     }}>
-      <TouchableOpacity onPress={onClose} style={{ position: 'absolute', top: 10, right: 10 }}>
+      <TouchableOpacity onPress={onClose} >
         <Image source={icons.x} style={{ width: 25, height: 25 }} />
       </TouchableOpacity>
 

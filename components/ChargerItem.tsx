@@ -61,8 +61,8 @@ const ChargerItem = ({ charger, userLocation, onPress, otherStyles }) => {
                 />
                 <Text className="font-sfbold text-xl text-black ml-2">{charger.name}</Text>
               </View>
-              <Text className={`text-lg font-sfregular ${charger.is_public ? 'text-green-100' : 'text-red-500'}`}>
-                {charger.is_public ? 'Public Station' : 'Private Station'}
+              <Text className={`text-lg font-sfregular ${!charger.is_public ? 'text-green-100' : 'text-red-500'}`}>
+                {!charger.is_public ? 'Public Station' : 'Private Station'}
               </Text>
             </View>
           </View>
