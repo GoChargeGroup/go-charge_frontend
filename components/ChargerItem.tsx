@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { haversineDistance } from '@/utils/utils';
 import { useNavigation } from '@react-navigation/native';
 import { icons } from '@/constants';
+import { getStationReviews } from '@/lib/authService';
 
 const ChargerItem = ({ charger, userLocation, onPress, otherStyles }) => {
   const navigation = useNavigation();
@@ -16,7 +17,7 @@ const ChargerItem = ({ charger, userLocation, onPress, otherStyles }) => {
     const fetchReviews = async () => {
       try {
         // const reviewsData = await getReviewsByChargerId(charger.$id);
-        const reviewsData = [];
+        const reviewsData = await getStationReviews(charger.id);
         if (reviewsData.length > 0) {
           const totalRating = reviewsData.reduce((acc, review) => acc + review.rating, 0);
           setAverageRating((totalRating / reviewsData.length).toFixed(1));
