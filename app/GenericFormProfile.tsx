@@ -1,13 +1,15 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, TouchableOpacity, Alert, Modal } from 'react-native';
+import { OtpInput } from "react-native-otp-entry";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, useRoute } from '@react-navigation/native';
-
+import { router } from 'expo-router';
 import CustomButton from '@/components/CustomButton';
+import FormField from '@/components/FormField';
 import { GestureHandlerRootView, ScrollView } from 'react-native-gesture-handler';
 import { AntDesign } from '@expo/vector-icons';
 import { useGlobalContext } from '@/context/GlobalProvider';
-import { editUser } from '@/lib/authService';
+import { editEmail, editUsername, login, sendEditUsernameVerification } from '@/lib/authService';
 
 const GenericFormProfile = () => {
   const navigation = useNavigation();
@@ -15,31 +17,52 @@ const GenericFormProfile = () => {
   const route = useRoute();
   const { fieldName, fieldValue, userId, displayName} = route.params;
   const [value, setValue] = useState(fieldValue);
-  
-  const handleSave = async () => {
-    if(verifyInput()) {
-      try {
-          const updatedData = {
-              username: user.username, 
-              email: user.email, 
-              [fieldName]: value, 
-            };
-            console.log(updatedData);
-        if(fieldName === "email") updatedData[fieldName] = value.toLowerCase();
-        const updatedUser = await editUser(userId, updatedData);
-        setUser(updatedUser);
-      //   setUser((prevUser) => ({
-      //     ...prevUser,
-      //     [fieldName]: value,
-      //   }));
-        Alert.alert('Success', `${fieldName} updated successfully`);
-        navigation.goBack();
-      } catch (error) {
-        console.error('Failed to update user profile:', error);
-        Alert.alert('Error', `Failed to update ${fieldName}`);
-      }
+  const [usernameModalVisible, setUsernameModalVisible] = useState(false);
+  const [emailModalVisible, setEmailModalVisible] = useState(false);
+  const [otp, setOTP] = useState('');
+  const [timeLeft, setTimeLeft] = useState(300);
+  const [answer1, setAnswer1] = useState('');
+  const [answer2, setAnswer2] = useState('');
+
+  const showEditUsernameModal = async () => {
+    try {
+      await sendEditUsernameVerification();
+    } catch (error) {
+        Alert.alert('Error', error.message);
+    }
+    setUsernameModalVisible(true);
+  };
+
+  const handleUpdateUsername = async () => {
+    try {
+      verifyInput();
+      await editUsername(otp, value); 
+      Alert.alert('Success', 'Username updated successfully!');
+      setUsernameModalVisible(false);
+      router.back();
+    } catch (error) {
+      console.log(error);
+      setUsernameModalVisible(false);
+      Alert.alert('Error', 'Failed to update username. Please try again later.');
+      router.back();
     }
   };
+
+  const handleUpdateEmail = async () => {
+    try {
+      if (!verifyInput()) return;
+      await editEmail(value, [answer1, answer2]); 
+      Alert.alert('Success', 'Email updated successfully!');
+      setEmailModalVisible(false);
+      router.back();
+    } catch (error) {
+      console.log(error);
+      setEmailModalVisible(false);
+      Alert.alert('Error', 'Failed to update email. Please try again later.');
+      router.back();
+    }
+  };
+
   function verifyInput() {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     switch(fieldName) {
@@ -57,6 +80,31 @@ const GenericFormProfile = () => {
         return true;
     }
   }
+
+  useEffect(() => {
+    let timer;
+    if (usernameModalVisible) {
+      setTimeLeft(300); 
+
+      timer = setInterval(() => {
+        setTimeLeft((prevTime) => {
+          if (prevTime <= 1) {
+            clearInterval(timer);
+            setUsernameModalVisible(false); 
+            return 0;
+          }
+          return prevTime - 1;
+        });
+      }, 1000);
+    }
+    return () => clearInterval(timer); 
+  }, [usernameModalVisible]);
+
+  const formatTime = (time) => {
+    const minutes = Math.floor(time / 60);
+    const seconds = time % 60;
+    return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+  };
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -77,11 +125,177 @@ const GenericFormProfile = () => {
             />
             <CustomButton
               title="Save"
-              handlePress={handleSave}
+              handlePress={() => {if (fieldName == "username") showEditUsernameModal(); else setEmailModalVisible(true);}}
               containerStyles="mt-7 w-full"
               textStyles=""
             />
           </View>
+          <Modal
+            visible={usernameModalVisible}
+            animationType="slide"
+            transparent
+            onRequestClose={() => setUsernameModalVisible(false)}
+          >
+            <View
+              style={{
+                flex: 1,
+                backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
+              <View
+                style={{
+                  width: 300,
+                  padding: 20,
+                  backgroundColor: 'white',
+                  borderRadius: 10,
+                  alignItems: 'center',
+                }}
+              >
+                <Text style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 10 }}>
+                  Edit Username
+                </Text>
+                <Text style={{ fontSize: 16, textAlign: 'center', marginBottom: 10 }}>
+                  Please check your email for a verification code.
+                </Text>
+                <Text style={{ fontSize: 16, marginBottom: 20, color: 'red' }}>
+                  Code will expire in: {formatTime(timeLeft)}
+                </Text>
+                <OtpInput
+                  numberOfDigits={5}
+                  onTextChange={(otp) => {setOTP(otp)}}
+                />
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    width: '100%',
+                  }}
+                >
+                  <TouchableOpacity
+                    style={{
+                      flex: 1,
+                      marginRight: 10,
+                      marginTop: 10,
+                      backgroundColor: '#ccc',
+                      padding: 10,
+                      borderRadius: 5,
+                      alignItems: 'center',
+                    }}
+                    onPress={() => setUsernameModalVisible(false)}
+                  >
+                    <Text style={{ color: 'white', fontWeight: 'bold' }}>Cancel</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={{
+                      flex: 1,
+                      marginLeft: 10,
+                      marginTop: 10,
+                      backgroundColor: 'red',
+                      padding: 10,
+                      borderRadius: 5,
+                      alignItems: 'center',
+                    }}
+                    onPress={handleUpdateUsername}
+                  >
+                    <Text style={{ color: 'white', fontWeight: 'bold' }}>Submit</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          </Modal>
+
+          <Modal
+            visible={emailModalVisible}
+            animationType="slide"
+            transparent
+            onRequestClose={() => setEmailModalVisible(false)}
+          >
+            <View
+              style={{
+                flex: 1,
+                backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
+              <View
+                style={{
+                  width: 300,
+                  padding: 20,
+                  backgroundColor: 'white',
+                  borderRadius: 10,
+                  alignItems: 'center',
+                }}
+              >
+                <Text style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 10 }}>
+                  Edit Email
+                </Text>
+                <Text style={{ fontSize: 16, textAlign: 'center', marginBottom: 20 }}>
+                  Please answer these security questions to finish editing your email.
+                </Text>
+                <Text className="mb-2">Security Question 1</Text>
+                <Text className="text-xl">What street did you grow up on?</Text>
+                <FormField
+                  placeholder="Enter your answer"
+                  value={answer1}
+                  onChangeText={setAnswer1}
+                  formStyles="border-2 border-gray-600 rounded-xl mb-2"
+                  textStyles="!pt-0"
+                  otherStyles="!space-y-0"
+                />
+          
+                <Text className="mt-4 mb-2">Security Question 2</Text>
+                <Text className="text-xl">What was the name of your first school?</Text>
+                <FormField
+                  placeholder="Enter your answer"
+                  value={answer2}
+                  onChangeText={setAnswer2}
+                  formStyles="border-2 border-gray-600 rounded-xl"
+                  textStyles="!pt-0"
+                  otherStyles="!space-y-0"
+                />
+               
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    width: '100%',
+                  }}
+                >
+                  <TouchableOpacity
+                    style={{
+                      flex: 1,
+                      marginRight: 10,
+                      marginTop: 15,
+                      backgroundColor: '#ccc',
+                      padding: 10,
+                      borderRadius: 5,
+                      alignItems: 'center',
+                    }}
+                    onPress={() => setEmailModalVisible(false)}
+                  >
+                    <Text style={{ color: 'white', fontWeight: 'bold' }}>Cancel</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={{
+                      flex: 1,
+                      marginLeft: 10,
+                      marginTop: 15,
+                      backgroundColor: 'red',
+                      padding: 10,
+                      borderRadius: 5,
+                      alignItems: 'center',
+                    }}
+                    onPress={handleUpdateEmail}
+                  >
+                    <Text style={{ color: 'white', fontWeight: 'bold' }}>Submit</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          </Modal>
         </ScrollView>
       </SafeAreaView>
     </GestureHandlerRootView>

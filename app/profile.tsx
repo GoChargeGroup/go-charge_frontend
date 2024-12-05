@@ -17,6 +17,7 @@ const Profile = () => {
   const [promotionsNotifications, setPromotionsNotifications] = useState(true);
   const navigation = useNavigation();
   const [modalVisible, setModalVisible] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(300);
   const [otp, setOTP] = useState('');
 
 
@@ -26,7 +27,31 @@ const Profile = () => {
     }
   }, [user, isLoading]);
 
-  
+  useEffect(() => {
+    let timer;
+    if (modalVisible) {
+      setTimeLeft(300); 
+
+      timer = setInterval(() => {
+        setTimeLeft((prevTime) => {
+          if (prevTime <= 1) {
+            clearInterval(timer);
+            setModalVisible(false); 
+            return 0;
+          }
+          return prevTime - 1;
+        });
+      }, 1000);
+    }
+    return () => clearInterval(timer); 
+  }, [modalVisible]);
+
+  const formatTime = (time) => {
+    const minutes = Math.floor(time / 60);
+    const seconds = time % 60;
+    return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+  };
+
   const pickImage = async () => {
     await ImagePicker.requestMediaLibraryPermissionsAsync();
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -51,30 +76,6 @@ const Profile = () => {
   };
 
   const handleDeleteAccount = async () => {
-    // Alert.alert(
-    //   'Delete Account',
-    //   'Are you sure you want to delete your account? This action cannot be undone.',
-    //   [
-    //     { text: 'Cancel', style: 'cancel' },
-    //     {
-    //       text: 'OK',
-    //       onPress: async () => {
-    //         try {
-    //           await deleteUser(); 
-    //           setUser(null); 
-    //           setIsLoggedIn(false); 
-    //           router.replace('/sign-in'); 
-    //           Alert.alert('Success', 'Account deleted successfully');
-    //         } catch (error) {
-    //           console.log(error);
-    //           Alert.alert('Error', 'Failed to delete account. Please try again later.');
-    //         }
-    //       },
-    //     },
-    //   ],
-    //   { cancelable: true }
-    // );
-
     try {
       await deleteUser(otp); 
       setUser(null); 
@@ -122,7 +123,7 @@ const Profile = () => {
         fieldName,
         fieldValue,
         userId: user.$id,
-        displayName
+        displayName 
       },
     });
   };
@@ -242,6 +243,9 @@ const Profile = () => {
             </Text>
             <Text style={{ fontSize: 16, textAlign: 'center', marginBottom: 10 }}>
               If you would like to continue, check your email for a verification code.
+            </Text>
+            <Text style={{ fontSize: 16, marginBottom: 16, color: 'red' }}>
+              Code will expire in: {formatTime(timeLeft)}
             </Text>
             <OtpInput
               numberOfDigits={5}
