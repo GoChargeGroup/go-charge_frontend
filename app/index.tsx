@@ -422,10 +422,10 @@ const Index = () => {
               <View className="w-11/12 flex-row justify-between">
                 <TouchableOpacity 
                   className="w-1/2 p-6 mr-2 bg-customWhite-200 rounded-2xl flex-col justify-center items-center" 
-                  onPress={() => { router.push('/support'); }}
+                  onPress={() => { router.push('faq'); }}
                 >
-                  <Text className="text-lg font-sfbold">Support</Text>
-                  <Text className="text-md text-gray-600 font-sfregular">Help in anytime</Text>
+                  <Text className="text-lg font-sfbold">FAQ</Text>
+                  <Text className="text-md text-gray-600 font-sfregular">Answer to your questions</Text>
                 </TouchableOpacity>
                 
                 <TouchableOpacity 
