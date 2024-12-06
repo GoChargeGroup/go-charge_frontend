@@ -9,7 +9,7 @@ import { icons } from '@/constants';
 const FilterModal = ({ isModalVisible, setModalVisible, applyOptions }) => {
   const [maxPrice, setMaxPrice] = useState(75);
   const [maxDistance, setMaxDistance] = useState(50);
-  const [minRating, setMinRating] = useState(2.5);
+  const [minRating, setMinRating] = useState(3);
   const [selectedPlugTypes, setSelectedPlugTypes] = useState(['type1', 'type2', 'ccs', 'chademo']);
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
@@ -35,7 +35,7 @@ const FilterModal = ({ isModalVisible, setModalVisible, applyOptions }) => {
   const [lastAppliedOptions, setLastAppliedOptions] = useState({
     maxPrice: 75,
     maxDistance: 50,
-    minRating: 2.5,
+    minRating: 3,
     selectedPlugTypes: ['type1', 'type2', 'ccs', 'chademo'],
     powerLevels: [
       { label: 'Level 1', value: 'level1', checked: true },
@@ -74,7 +74,7 @@ const FilterModal = ({ isModalVisible, setModalVisible, applyOptions }) => {
   const resetOptions = () => {
     setMaxPrice(75);
     setMaxDistance(50);
-    setMinRating(2.5);
+    setMinRating(3);
     setSelectedPlugTypes(['type1', 'type2', 'ccs', 'chademo']);
     setPowerLevels([
       { label: 'Level 1', value: 'level1', checked: true },
@@ -90,7 +90,7 @@ const FilterModal = ({ isModalVisible, setModalVisible, applyOptions }) => {
     applyOptions({ 
         maxPrice: 75, 
         maxDistance: 50, 
-        minRating: 2.5,
+        minRating: 3,
         selectedPlugTypes: ['type1', 'type2', 'ccs', 'chademo'], 
         powerLevels: [
           { label: 'Level 1', value: 'level1', checked: true },
@@ -145,6 +145,22 @@ const FilterModal = ({ isModalVisible, setModalVisible, applyOptions }) => {
     );
   };
 
+
+  const renderStars = (currentRating) => {
+    const stars = [];
+    for (let i = 0; i < 5; i++) {
+      stars.push(
+        <TouchableOpacity key={i} onPress={() => setMinRating(i+1)}>
+          <Image
+             source={i < currentRating ? icons.star : icons.starFilled}
+            style={{ width: 24, height: 24, margin: 2 }}
+          />
+        </TouchableOpacity>
+      );
+    }
+    return <View style={{ flexDirection: 'row' }}>{stars}</View>;
+  };
+
   return (
     <Modal
       animationType="slide"
@@ -195,10 +211,9 @@ const FilterModal = ({ isModalVisible, setModalVisible, applyOptions }) => {
 
           {/* Minimum Ratings */}
           <Text style={{ fontWeight: 'bold', marginTop: 10, marginBottom: 5 }}>Minimum Rating: {minRating} stars</Text>
-          <Rating
-            fractions={1}
-            onFinishRating={(rating: any) => setMinRating(rating)}
-          />
+          <View style={{alignItems: 'center'}}>
+            {renderStars(minRating)}
+          </View>
 
           {/* EV Charger Plug Types */}
           <Text style={{ fontWeight: 'bold', marginTop: 10 }}>Plug Type:</Text>
